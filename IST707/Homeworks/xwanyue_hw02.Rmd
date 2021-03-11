@@ -1,0 +1,520 @@
+---
+  title: "IST 707 Data Analytic: Homework 02"
+  author: "Wanyue Xiao"
+  date: "March 2nd, 2020"
+  output: 
+    html_document: 
+      theme: cerulean
+---
+# Brief
+This homework will analyze the weather dataset which records weather observations. The purpose of this homework is to find whether it is possible to rain in tomorrow. To get this estimated result, we should clean the nasty dataset, find features, and construct required models via useing Decition Tree Algorithm and Clustering Modles Algorithm such as Kmeans and Hierarchical Clustering Algorithm. Finally, we need to use these models to fit the test dataset and get estimated results.
+```{r}
+
+```
+# Data Importing and Munging
+Import dataset, convert data type, remove features with no or low variance, remove duplicates, checking and replacing null values, finding and replacing outliers.
+<br>
+Before analyzing the dataset, one should library all the necessary packages.
+```{r message=FALSE}
+library(dplyr)
+library(knitr)
+library(caret)
+library(e1071)
+library(rpart)
+library(rattle)
+library(pROC)
+library(corrplot)
+library(RANN)
+library(rappdirs)
+library(ggplot2)
+library(plyr)
+library(tidyr)
+library(purrr)
+library(rsconnect)
+library(naniar)
+library(factoextra)
+library(scorecard)
+```
+Importing the Dataset. 
+```{r results='hide'}
+my.dir <- getwd()
+weather <- read.csv(paste0(my.dir, "/","Weather Forecast Training.csv"), header = TRUE, stringsAsFactors = FALSE)
+test <- read.csv(paste0(my.dir, "/","Weather Forecast Testing.csv"), header = TRUE, stringsAsFactors = FALSE)
+```
+**Checking data structure**
+<br>
+The weather dataset consists of 16 columns. 11 out of these 16 columns contain numeric data while the rest of the columns contain categorical data. Since the test dataset are similar with weather dataset, it is unnecessary to display again. 
+```{r fig.width=8, fig.height= 12}
+str(weather)
+summary(weather)
+```
+
+```{r}
+
+```
+**Visualization of Missing Values**
+<br>
+Checking the columns with missing values and empty values. Normally, for column that does not have many missing values, one can drop these rows directly. However, in this step, since we cannot ensure which feature is more important to the target result (RainTomorrow). We might want to save as many rows as possible. 
+<br>
+For categorical columns, we might replace those null values with place holder value (such as "No Value") or might drop these values since we cannot simply replace these values with mode.
+```{r fig.width=10, fig.height= 5}
+vis_miss(weather)
+```
+
+```{r}
+
+```
+## Missing Values Management
+Finding and displaying all the missing values in numeric type columns. Besides, one should notify that several categorical volumns might contain empty values.
+```{r fig.width=10, fig.height= 5}
+sapply(weather, function(x) sum(is.na(x)))
+sapply(weather, function(x) sum(x == ""))
+```
+**For Categorical Empty Values**
+<br>
+Before dealing with null values in numeric type columns, we should try to eliminate empty values in the categorical volumns. 
+<br>
+First of all, one needs to check if any abnormality exists in these categorical columns. **Fortunately, there aren't any abnomalities.**
+```{r}
+categorical_columns <- c('WindGustDir', 'WindDir', 'RainToday','RainTomorrow')
+for (i in categorical_columns){
+  print(unique(weather[i]))
+}
+```
+Next, let's now investigate the empty values in each column since we need to remove or change these null values before training models.
+<br>
+The number of missing values in Rainfall column is as many as that of values in RainToday Column. Then we can make an assumption that there is a relationship between those two columns.
+<br>
+From these statistics listed below, one can conclude that there is a relationship between RainToday Columne and Rainfall Column since one can use Rainfall to represent the values in that column. 
+<br>
+*  If the value of rainfall is lower than 1.0, then RainToday is not recignized as "No". <br>
+*  If that value is higher than 1.0, RainToday is recognized as "Yes".  <br>
+```{r}
+weather %>% select(Rainfall, RainToday) %>% filter(RainToday == 'Yes') %>% summarise(min = min(Rainfall),max = max(Rainfall))
+weather %>% select(Rainfall, RainToday) %>% filter(RainToday != 'Yes' & is.na(Rainfall) == FALSE) %>% summarise(min = min(Rainfall),max = max(Rainfall))
+```
+<br>
+Even though we make an conclusion that Rainfall can be used to represent the result in RainToday, there are cases that values in Rainfall and RainToday are both absent. Then, we might need to drop these values directly given that we cannot find the original data to replace missing values in RainToday column.
+```{r}
+weather %>% select(Rainfall, RainToday) %>% filter(RainToday == '' & is.na(Rainfall) == TRUE) %>% head(5)
+get.index <- which(weather$RainToday == '' & is.na(weather$Rainfall) == TRUE)
+weather <- weather[-c(get.index),]
+```
+<br>
+According to the Assignment requirments, we need to predict the Target Result (RainTomorrow) after constructing necessary models. It is required to clean and manage the test dataset in the same way as we handle the weather dataset.
+```{r results='hide'}
+get.index <- which(test$RainToday == '' & is.na(test$Rainfall) == TRUE)
+test <- test[-c(get.index),]
+```
+**For WindGustDir and WindDir Columns**
+<br>
+The number of missing values in WindGustDir is similar with that of values in WindGustSpeed. Similarly, The number of missing values in WindDir is also approching to that of values in WindSpeed. Hence, once can investigate the relationship among these columns. 
+<br>
+**For WindDir**, the column still has 1459 missing values. After reviewing these values, the missing values in WindDir can be replaced by "NoWind" as long as those corresponding values in WindSpeed equal to 0. For the rest missing values in WindDir, one can replace them with "NoValue".
+```{r}
+weather %>% select(WindDir, WindSpeed) %>% filter(WindDir == "") %>% dplyr::summarise(count = n())
+get.index <- which(weather$WindDir == "" & weather$WindSpeed == 0)
+weather[c(get.index),9] <- "NoWind"
+weather %>% select(WindDir, WindSpeed) %>% filter(WindDir == "" & is.na(WindSpeed) == FALSE)
+get.index <- which(weather$WindDir == "")
+weather[c(get.index),9] <- "NoValue"
+```
+Same process for managing test dataset.
+```{r results='hide'}
+test %>% select(WindDir, WindSpeed) %>% filter(WindDir == "") %>% dplyr::summarise(count = n())
+get.index <- which(test$WindDir == "" & test$WindSpeed == 0)
+test[c(get.index),10] <- "NoWind"
+test %>% select(WindDir, WindSpeed) %>% filter(WindDir == "" & is.na(WindSpeed) == FALSE) %>% head(5)
+get.index <- which(test$WindDir == "")
+test[c(get.index),10] <- "NoValue"
+```
+**For WindGustDir columns**, it still has 3522 missing values. Similarly, one can use "NoValue" to replcae these missing data.
+```{r}
+weather %>% select(WindGustDir, WindGustSpeed) %>% filter(WindGustDir == "") %>% dplyr::summarise(count = n())
+get.index <- which(weather$WindGustDir == "")
+weather[c(get.index),7] <- "NoValue"
+```
+Same process for managing test dataset.
+```{r results='hide'}
+get.index <- which(test$WindGustDir == "")
+test[c(get.index),8] <- "NoValue"
+```
+<br>
+**Numeric Data Imputation**
+<br>
+Checking the distribution of numeric data. Approximatly, Humidity, MaxTemp, MinTemp, Pressure, Temp columns follow Normal Distribution. Cloud and Sunshine do not follow certain distribution. For thes rest columns,these columns are right-skewed. 
+<br>
+For numeric columns, we can use median, mean, or KNN Imputation method to replace the missing values which have certain distribution. However, using median or mean for values replacement might result in bias introduction. Hence, we might **use KNN Imputation method to manage missing values** in this step.
+```{r warning=FALSE}
+weather %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(x = value)) +
+  facet_wrap(~key, scales = "free") +
+  geom_histogram(bins = 15, fill = "lightblue", color = "white") +
+  labs(title = "Show Distribution of Each Numeric Column")
+```
+<br>
+Visualize numeric missing values.
+```{r}
+gg_miss_var(weather) + labs(y = "Look at columns with missing values")
+```
+<br>
+Executing KNN Imputation Method to replcace numeric type missing values.
+```{r}
+preProcValues <- caret::preProcess(weather, method = c("knnImpute", "center", "scale"))
+weather <- predict(preProcValues, weather)
+procNames <- data.frame(col = names(preProcValues$mean), mean = preProcValues$mean, sd = preProcValues$std)
+for(i in procNames$col){
+  weather[i] <- weather[i]*preProcValues$std[i]+preProcValues$mean[i]
+}
+weather$Rainfall <- round(weather$Rainfall,1)
+weather$WindSpeed <- round(weather$WindSpeed,1)
+weather$Pressure <- round(weather$Pressure,1)
+```
+<br>
+Same procedure to replace missing values in test dataset.
+```{r results='hide'}
+preProcValues <- caret::preProcess(test, method = c("knnImpute", "center", "scale"))
+test <- predict(preProcValues, test)
+procNames <- data.frame(col = names(preProcValues$mean), mean = preProcValues$mean, sd = preProcValues$std)
+for(i in procNames$col){
+  test[i] <- test[i]*preProcValues$std[i]+preProcValues$mean[i]
+}
+test$Rainfall <- round(test$Rainfall,1)
+test$WindSpeed <- round(test$WindSpeed,1)
+test$Pressure <- round(test$Pressure,1)
+```
+<br>
+To better identify the estimated result, we should extract and assign the "ID" to result data frame which will be used to store the estimated results in the next step. Besides, we need to eliminate the "ID" column from the test dataset.
+```{r}
+result <- as.data.frame(test[,c(1)])
+colnames(result) <- 'ID'
+test <- test[,-c(1)]
+```
+
+```{r}
+
+```
+## Dealing with Duplicates
+Checking any possible duplicate data for both weather and test dataset. If the dataset contains some duplicates, we should eliminate them.
+```{r}
+ifelse(nrow(weather) == nrow(weather[!duplicated(weather),]), 'The dataset does not have duplicate', 'The dataset has duplicate')
+weather <- weather[!duplicated(weather),]
+```
+<br>
+Same process for test dataset.
+```{r results='hide'}
+ifelse(nrow(test) == nrow(test[!duplicated(test),]), 'The dataset does not have duplicate', 'The dataset has duplicate')
+test <- test[!duplicated(test),]
+```
+
+```{r}
+
+```
+## Checking for outliers
+To find potential outliers, one can use boxplots to visualize the data.
+<br>
+For this graph, one can conclude the columns with outliers:
+<br>
+* Evaporation <br> 
+* MaxTemp <br> 
+* MinTemp <br>
+* Pressure <br>
+* Rainfall <br>
+* Temp <br>
+* WindGustSpeed & WindSpeed 
+<br>
+Even though there are several columns with outliers, none of them will be managed since some outliers are plausible to exist in real world. For example, the maximun of "Evaporation" (which is 78) has been recognized as outlier. However, this number is highly possible to exist. <br>
+```{r warning=FALSE, fig.width=10, fig.height=15}
+weather %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(y = value, fill = "orange")) +
+  facet_wrap(~key, scales = "free") +
+  geom_boxplot() +
+  labs(title = "Boxplots of Numeric Columns")
+weather$MinTemp[weather$MinTemp %in% boxplot.stats(weather$MinTemp)$out] <- round(mean(weather$MinTemp, na.rm = T),1)
+test$MinTemp[test$MinTemp %in% boxplot.stats(test$MinTemp)$out] <- round(mean(test$MinTemp, na.rm = T),1)
+```
+<br>
+```{r}
+
+```
+## Data Type Conversion
+Before moving to model construction, we need to find features that are important to predict the result. Hence, we need to convert all the categorical data to dummy data.
+<br>
+Change RainToday to numeric type by setting "Yes" as 1 and "No" as 0. Doing the same process for RainTomorrow column.
+```{r}
+weather$RainToday <- as.numeric(ifelse(weather$RainToday == 'Yes', 1, 0))
+weather$RainTommorow_Num <- weather$RainTomorrow
+weather$RainTommorow_Num <- as.numeric(ifelse(weather$RainTommorow_Num  == 'Yes', 1, 0))
+test$RainToday <- as.numeric(ifelse(test$RainToday == 'Yes', 1, 0))
+```
+<br>
+Change the data type from integer to numeric or character to facter.
+```{r}
+num_var <- sapply(weather, is.integer)
+weather[, num_var] <- lapply(weather[, num_var], as.numeric)
+char_var <- sapply(weather, is.character)
+weather[, char_var] <- lapply(weather[, char_var], as.factor)
+```
+<br>
+Same data type convertion process for test dataset.
+```{r results='hide'}
+num_var <- sapply(test, is.integer)
+test[, num_var] <- lapply(test[, num_var], as.numeric)
+char_var <- sapply(test, is.character)
+test[, char_var] <- lapply(test[, char_var], as.factor)
+```
+**Add dummy variables**
+<br>
+Converting the rest two categorical columns to dummy variables.
+```{r}
+dmy <- caret::dummyVars("~WindGustDir", data = weather, fullRank = F)
+weather <- cbind(weather, data.frame(predict(dmy, newdata = weather)))
+dmy <- caret::dummyVars("~WindDir", data = weather, fullRank = F)
+weather <- cbind(weather, data.frame(predict(dmy, newdata = weather)))
+```
+<br>
+Same process for test dataset.
+```{r results='hide'}
+dmy <- caret::dummyVars("~WindGustDir", data = test, fullRank = F)
+test <- cbind(test, data.frame(predict(dmy, newdata = test)))
+dmy <- caret::dummyVars("~WindDir", data = test, fullRank = F)
+test <- cbind(test, data.frame(predict(dmy, newdata = test)))
+```
+
+```{r}
+
+```
+# Exploratory Data Analysis and Data Visualization
+Using barplots to display the frequency of categorical variables.
+```{r}
+par(mfrow = c(2,2))
+barplot(table(weather$RainTomorrow), col = c("blue","orange"), main = "Barplot of RainTomorrow", ylab = "Count")
+barplot(table(weather$RainToday), col = c("blue","orange"), main = "Barplot of RainToday", ylab = "Count", names.arg = c("No", "Yes"))
+barplot(table(weather$WindGustDir), col = c("lightblue","orange", "pink"), main = "WindGustDir", ylab = "Count")
+barplot(table(weather$WindDir), col = c("lightblue","orange", "pink"), main = "WindGustDir", ylab = "Count")
+```
+
+```{r}
+
+```
+## PCA Analysis
+We can use PCA analysis to visualize how this data correlate with each other and in which degree this data stays significantly to the dataset.
+This is easy for now since we are using the whole dataset, but will require some modifications for model fitting with a train and test set.
+```{r}
+par(mfrow = c(1,1))
+vis_pca <- function(df){
+  res.pca <- prcomp(df, scale = TRUE)
+  fviz_pca_var(res.pca,
+               col.var = "contrib", # Color by contributions to the PC
+               gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+               repel = TRUE     # Avoid text overlapping
+  )
+}
+pca_analysis <- weather[,-c(1,7,9,16)]
+vis_pca(pca_analysis)
+```
+<br>
+The PCA plot is rather messy. We need to drop columns that have less contribution to the dataset or columns that have similar direction. Then we can get features (or columns) that are significant to the dataset.
+```{r}
+pca_analysis <- pca_analysis[,c(1:12)]
+pca_analysis <- pca_analysis[,-c(4, 7,11)]
+vis_pca(pca_analysis)
+```
+**Correlation Table**
+<br>
+There are some obvious correlations here, such as MaxTemp and MinTemp. Also Cloud and Sunshine variables and Humidity and Sunshine variables are negatively correlated with each other. This is not suprisingly strange since Sunshine negativelly correlates with Humidity or Cloud variable in reality. Besides, temperature and pressure are slightly negatively correlated. Since the models we are using are non-linear, we don't have to remove those co-linear features becasue the models will capture these relationships.
+```{r}
+cor_matrix <- cor(pca_analysis[complete.cases(pca_analysis), sapply(pca_analysis, is.numeric)], method = "pearson")
+corrplot(cor_matrix, type = "upper")
+```
+<br>
+Same processes for test dataset.
+```{r}
+pca_analysis_test <- test[,c(1:15)]
+pca_analysis_test <- pca_analysis_test[,-c(1,5,7,9,10,14)]
+```
+
+# Models Construction
+```{r}
+
+```
+## Data Sampling
+<br>
+To evaluate the model performance, we need to splite the tagged dataset (which is the weather dataset) into two. The sample_train subset will be used fro model training and tunning while the sample_test will be used to test predict ability by calculating Accuracy, Specificity, Recall, and ROC rates. 
+```{r}
+pre_analysis <- pca_analysis
+pre_analysis <- cbind(pre_analysis, as.data.frame(weather$RainTomorrow))
+colnames(pre_analysis)[10] <- "RainTomorrow"
+```
+<br>
+Randomly sample the dataset to two subsets. The sample_train contains 70% of the original data while the sample_test contains the rest. Besides, this process also **manages the issues of imbalanced target values** happened in weather dataset.
+```{r}
+set.seed(265)
+sample_index <- sample(1:nrow(pre_analysis), size = nrow(pre_analysis) * 0.7, replace = F)
+sample_train <- pre_analysis[sample_index,]
+sample_test <- pre_analysis[-sample_index,]
+```
+
+```{r}
+
+```
+## Decition Tree
+By setting RainTommorow as target column, we can obtain results that records condition that might influence the classification result. To do that, we can plot the Decition Tree.
+<br>
+<br>
+For model tunning, we can use tuneLength which tells the algorithm to try different default values for the main parameter. Besides, we sets the maxdepth as 7 while setting the minsplit as 30.
+<br>
+<br>
+From this plot, we can conclude that Humidity is the most important factor. If this value is higher than 81, it is highly possible to rain in tommorow. Under this condition, WindGustSpeed, RainFall (which also represents RainToday column), Pressure, and Cloud can also influence the result. The higher these values will be, the higher the possibility that tommorow is going to rain. On contrary, the possibility to rain will decrease as these values keeps reducing.
+```{r}
+dt_model <- train(RainTomorrow ~., 
+                  data = sample_train,
+                  tuneLength = 9,
+                  metric = "Accuracy", 
+                  method = "rpart",
+                  control = rpart.control(minsplit = 30, minbucket = round(30/3), maxdepth = 7))
+fancyRpartPlot(dt_model$finalModel)
+```
+<br>
+Display the model performance. The accuracy rate is 0.7662 which is rather satisfactory given how messy this dataset is being. The accuracy rate is within the CI interval, implying that the result is trustful. Besides, the sensitivity and specificity are also high enough.
+```{r}
+dt_pred <- predict(dt_model, newdata = sample_test, type = "raw")
+dt_pred_prob <- predict(dt_model, newdata = sample_test, type = "prob")
+cm_dt <- confusionMatrix(dt_pred, sample_test$RainTomorrow)
+cm_dt
+```
+<br>
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names <- as.data.frame(c("Accuracy", "Sensitivity", "Specificity", "Precision", "Recall"))
+rownames(Per_names) <- c("Accuracy", "Sensitivity", "Specificity", "Precision", "Recall")
+colnames(Per_names) <- "DT"
+Per_names$DT <- c(as.numeric(cm_dt$overall[1]), as.numeric(cm_dt$byClass[1]), as.numeric(cm_dt$byClass[2]), as.numeric(cm_dt$byClass[5]), as.numeric(cm_dt$byClass[6]))
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc_curve <- roc(sample_test$RainTomorrow, dt_pred_prob$Yes) 
+plot(roc_curve)
+auc(roc_curve)
+```
+<br>
+Utilizing the DT model to predict the classification result of test data. Storing these results to the result data frame.
+```{r}
+result$DT <- predict(dt_model, newdata = pca_analysis_test, type = "raw")
+```
+<br>
+Now, let's use clustering models to check if these models fit this data.
+```{r}
+
+```
+## Clustering Kmeans Algorithm
+KMeans is a classic clustering algorithm which can be used to classify data into desired number of clusters (or groups). Firstly, we need to extract all the numeric data from weather dataset and store them into pre_analysis data frame.
+```{r}
+pre_analysis <- weather[,-c(1,7,9,16,17)]
+```
+Same Process for test dataet.
+```{r}
+pre_analysis_test <- test[,-c(1,7,9)]
+```
+<br>
+Scale and standardize the data. 
+```{r}
+pre_analysis <- as.data.frame(scale(pre_analysis, center = TRUE, scale = TRUE))
+```
+<br>
+Same Process for test dataet.
+```{r}
+pre_analysis_test <- as.data.frame(scale(pre_analysis_test, center = TRUE, scale = TRUE))
+```
+<br>
+Since we want to split the dataset into two clusters, we need to set the k value to 2. Then we set the nstar as 200 and set the iter.max to 800, which ensure that this model will iterate several times to maximum the prediction performance. Then we can visualize the dataset.
+```{r}
+km_output <- kmeans(pre_analysis, centers = 2, nstart = 200, iter.max = 800, algorithm = "Hartigan-Wong")
+fviz_cluster(km_output, data = pre_analysis, pointsize = 0.3)
+```
+<br>
+Checking the model performance.
+```{r}
+get_cluster <- km_output$cluster
+get_cluster[get_cluster == 2] <- "Yes"
+get_cluster[get_cluster == 1] <- "No"
+kmeans.matrix <- cbind2(get_cluster, as.data.frame(weather$RainTomorrow))
+table_kmeans <- table(kmeans.matrix)
+table_kmeans
+
+Per_names <- cbind(Per_names, c(sum(diag(table_kmeans)) / sum(table_kmeans), table_kmeans[2,2] / (table_kmeans[2,2] + table_kmeans[1,2]), table_kmeans[1,1] / (table_kmeans[1,1]+ table_kmeans[2,1]),table_kmeans[2,2] / (table_kmeans[2,2] + table_kmeans[2,1]), table_kmeans[2,2] / (table_kmeans[2,2] + table_kmeans[1,2])))
+colnames(Per_names)[2] <- "Kmeans"
+```
+<br>
+Utilizing the Kmeans model to predict the classification result of test data. Storing these results to the result data frame.
+```{r}
+result$Kmeans <- predict(dt_model, newdata = test)
+```
+
+```{r}
+
+```
+## Hierarchical Clustering (HAC)
+HAC is another clustering algorithm which is similar with Kmeans algorithm. The working mechanism of HAC is quit the opposite of that of KMeans since it classify the data points to cluster for following bottom-up procesure. Since the dataset is too large to execute this model, we need to sample and split the dataset into two.
+```{r}
+sample_index <- sample(1:nrow(weather), size = nrow(weather) * 0.5, replace = F)
+sample_hac <- weather[sample_index,]
+sample_target <- sample_hac[,-c(1,7,9,16)]
+```
+<br>
+We can use "euclidean" method to calculate the distance from one point to another. Then the model will use the "ward.D" method to compare the distances and classify each data point.
+```{r}
+hac_output <- hclust(dist(sample_target, method = "euclidean"), method = "ward.D")
+plot(hac_output, cex = 0.6, hang = -1, main = "HAC Plot", xlab = "cluster")
+rect.hclust(hac_output, k = 2, border = 2:5)
+```
+<br>
+Calculating and showing the **Accuracy** rate.
+```{r}
+clusters <- cutree(hac_output, k=2)
+target <- sample_hac$RainTomorrow
+table_hac <- table(clusters,target)
+table_hac
+
+Per_names <- cbind(Per_names, c(sum(diag(table_hac)) / sum(table_hac), table_hac[2,2] / (table_hac[2,2] + table_hac[1,2]), table_hac[1,1] / (table_hac[1,1]+ table_hac[2,1]),table_hac[2,2] / (table_hac[2,2] + table_hac[2,1]), table_hac[2,2] / (table_hac[2,2] + table_hac[1,2])))
+colnames(Per_names)[3] <- "HAC"
+```
+<br>
+Similarly, storing the predicted result to Result data frame. Then use write.csv function to save the document to local directory.
+```{r}
+hac_output <- hclust(dist(test[,-c(1,7,9)], method = "euclidean"), method = "ward.D")
+clusters <- cutree(hac_output, k=2)
+```
+
+```{r}
+clusters[clusters == 1] <- "Yes"
+clusters[clusters == 2] <- "No"
+result <- cbind(result, clusters)
+rownames(result)[3] <- "HAC"
+write.csv(result, "xwanyue_result")
+```
+For **Model Performance Evaluation:**<br>
+One should run the models several times with different hyper-parameters in order to optimize the results. To evaluate the performance of these models, we can use **Model Performance Metrics** to calculate the Accuracy, Precision (percent of predicted positive that are correct), Recall (percent of positive cases that are correctly predicted), and ROC. 
+<br>
+<br>
+
+According to the analysis illustrated above, there are the **"Summary** pf these models:
+<br>
+If we only looks at the accuracy rate, DT has better performance. Then it should be HAC. The last is Kmeans.
+```{r}
+Per_names
+```
+
+<br>
+
+<br>
+**Recommendation**<br>
+For this case, one can investage and fina a more tidy dataset. Besides, we did not optimize the hyperparameters of these models. This would most likely lead to overall improved performance at the cost of time.
+<br>
+
+**Finally**
+<br>

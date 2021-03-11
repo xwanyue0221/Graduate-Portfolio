@@ -1,0 +1,874 @@
+---
+title: 'IST 707 Data Analytic: Homework 03'
+author: "Wanyue Xiao"
+date: "April 5th, 2020"
+output:
+  html_document:
+    theme: cerulean
+  pdf_document: default
+---
+# Brief Introduction
+This homework will analyze the Disease Prediction dataset which records disease related observations. The **purpose** of this homework is to **find essential features and approproate modles to predict that if the patient is getting that disease or not**. To get this estimated result, we should clean the dataset, find important features, and construct required models through using a series of Classification Models, such as **KNN, XGBoost, SVM, Random Forest, and Naive Bayes**. Then, we need to use those models to fit the test dataset and get estimated results. Finally, we will use several model performance evaluation techniques to assess each model and select the most appropriate model for this dataset.
+```{r}
+```
+# Data Importing and Munging
+Import dataset, convert data type, remove features with no or low variance, remove duplicates, checking and replacing null values, finding and replacing outliers.
+<br>
+Before analyzing the dataset, one should library all the necessary packages.
+```{r message=FALSE}
+library(caret) 
+library(corrplot)
+library(dplyr)
+library(e1071)
+library(factoextra)
+library(ggplot2)
+library(gplots)
+library(ggpubr)
+library(knitr)
+library(klaR)
+library(naivebayes)
+library(naniar)
+library(pROC)
+library(plyr)
+library(rpart)
+library(RANN)
+library(RColorBrewer)
+library(tidyr)
+library(tidyverse)
+library(xgboost)
+```
+Importing the Dataset. 
+```{r results='hide'}
+my.dir <- getwd()
+train <- read.csv(paste0(my.dir, "/","Disease Prediction Training.csv"), header = TRUE, stringsAsFactors = FALSE)
+test <- read.csv(paste0(my.dir, "/","Disease Prediction Testing.csv"), header = TRUE, stringsAsFactors = FALSE)
+```
+**Checking data structure**
+<br>
+The weather dataset consists of 12 columns. 9 out of these 12 columns contain numeric data while the rest of the columns contain categorical data. Since the test dataset are similar with train dataset, it is unnecessary to display again. 
+```{r}
+dim(train)
+str(train)
+summary(train)
+```
+
+```{r}
+```
+## Missing Values Management
+Checking the columns with missing values and empty values. We can find that none of these columns has missing value. Here, **neither the train or test dataset has missing value**.
+```{r fig.width=10, fig.height= 3}
+vis_miss(train)
+vis_miss(test)
+```
+<br>
+**Empty Values Management**
+<br>
+It is possible that those categorcial type columns contain empty value. To find out that, we can elaborate all the factors conatined inside.
+```{r}
+categorical_columns <- c('Gender', 'Cholesterol', 'Glucose')
+for (i in categorical_columns){
+  print(unique(train[i]))
+}
+
+categorical_columns <- c('Gender', 'Cholesterol', 'Glucose')
+for (i in categorical_columns){
+  print(unique(test[i]))
+}
+```
+
+```{r}
+```
+## Dealing with Duplicates
+Checking any possible duplicate data for both weather and test dataset. There are 3061 duplicates inside the dataset. We can go through the top 10 duplicates. Then, all those duplicates should be eliminated.
+```{r}
+duplicated <- train[duplicated(train),] %>% arrange(Age, Gender, Height, Weight)
+dim(duplicated)
+head(duplicated,10)
+train <- unique(train)
+```
+We have to manage the test dataset in the same way.
+```{r}
+test <- unique(test)
+```
+
+```{r}
+```
+## Data Type Conversion
+Before moving to model construction, we need to find features that are important to predict the result. Hence, we need to convert all the categorical data to dummy data.
+```{r}
+num_var <- sapply(train, is.integer)
+train[, num_var] <- lapply(train[, num_var], as.numeric)
+char_var <- sapply(train, is.character)
+train[, char_var] <- lapply(train[, char_var], as.factor)
+```
+Managing the test dataset in the same way.
+```{r}
+num_var <- sapply(test, is.integer)
+test[, num_var] <- lapply(test[, num_var], as.numeric)
+char_var <- sapply(test, is.character)
+test[, char_var] <- lapply(test[, char_var], as.factor)
+```
+
+```{r}
+```
+## 0utliers Management
+To find potential outliers, one can use boxplots to visualize the data. For this graph, one can conclude the columns with outliers:
+<br>
+* Age <br> 
+* Heigth <br> 
+* Weight <br>
+* High.Blood.Pressure <br>
+* Low.Blood.Pressure 
+<br>
+<br>
+1. Even though there are several columns with outliers, we have to manage those outliers separately. **Some of them will not be managed since those outliers are plausible to exist in real world**. For example, the minimum of "Age" (which is 29) has been recognized as outlier. However, this number is highly possible to exist. 
+<br>
+2. **Some of them will be eliminated, replaced, or truncated since it contain very strange value**. Take the blood pressure as an example. It is a common sense that blood pressure could not be negative or higher than 300 mm Hg. After googling, the American Heart Association publiced that there are two numbers in a blood pressure reading, which are the upper (systolic) and lower (diastolic) numbers. Normally, **lower blood pressure ranges between 60 and 140** while **upper blood pressure ranges between 90 and 250**. Besides, it is also **abnormal to find that the value of Lower Blood Pressure is higher than that of High Blood Pressure**. 
+<br>
+3. What's more, **abnormalies also could be found in "Heigth" and "Weigth" columns**. For example, a male whose heigth is 178 only weighted 11kg.
+<br>
+```{r warning=FALSE, fig.width=12, fig.height=12, cache=TRUE}
+train %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(y = value, fill = "orange")) +
+  facet_wrap(~key, scales = "free") +
+  geom_boxplot() +
+  labs(title = "Boxplots of Numeric Columns") +
+  theme_minimal()
+```
+<br>
+<br>
+To manage those unrealistic outliers, we can check their quantile values. The 2.5% and 97.5% quantitles for the Low.Blood.Pressure are 60 and 100 while those of values for High.Blood.Pressure are 100 and 170. 
+```{r}
+quantile(train$Low.Blood.Pressure, c(0.025,0.975))
+quantile(train$High.Blood.Pressure, c(0.025,0.975))
+```
+<br>
+Combing the quantile results above and information we obtained from the Internet, we decide to set 60 and 140 as the boundary of Low.Blood.Pressure while to set 90 and 250 as the boundary for High.Blood.Pressure could be 90 and 250.
+```{r}
+train <- train %>% filter(Low.Blood.Pressure >= 60)
+train <- train %>% filter(Low.Blood.Pressure <= 140)
+train <- train %>% filter(High.Blood.Pressure >= 90)
+train <- train %>% filter(High.Blood.Pressure <= 250)
+train <- train %>% filter(Low.Blood.Pressure < High.Blood.Pressure)
+```
+<br> 
+For outliers in "Heigth" and "Weigth", we can follow the same processes mentioned above. Then, we can decide that the boundary for heigth is 51 and 108 while the boundary for Height is 150 and 180. 
+```{r}
+quantile(train$Weight, c(0.025,0.975))
+quantile(train$Height, c(0.025,0.975))
+train <- train %>% filter(Weight >= 51)
+train <- train %>% filter(Weight <= 108)
+train <- train %>% filter(Height >= 150)
+train <- train %>% filter(Height <= 180)
+```
+<br>
+To better discover the relationship between "Heigth" and "Weigth", we can introduce a new column called "BMI" to the dataset.
+```{r}
+train$BMI <- as.numeric(train$Weight/((train$Height/100)^2))
+```
+<br>
+Similarly, we have to manage the test dataset in the same way.
+```{r}
+test <- test %>% filter(Low.Blood.Pressure >= 60)
+test <- test %>% filter(Low.Blood.Pressure <= 140)
+test <- test %>% filter(High.Blood.Pressure >= 90)
+test <- test %>% filter(High.Blood.Pressure <= 250)
+test <- test %>% filter(Low.Blood.Pressure < High.Blood.Pressure)
+test <- test %>% filter(Height >= 150)
+test <- test %>% filter(Height <= 180)
+test <- test %>% filter(Weight >= 51)
+test <- test %>% filter(Weight <= 107)
+test$BMI <- as.numeric(test$Weight/((test$Height/100)^2))
+```
+
+```{r}
+
+```
+## Reordering and Checking the Dataset
+Now, we can go through the summary of the train dataset after all those manipulation. Here, we introduce a new column called "Disease_Type" which is as same as the Disease column.
+```{r}
+train <- train[,c(1,2,3,4,13,5,6,7,8,9,10,11,12)]
+train$Disease_Type <- as.factor(ifelse(train$Disease == 1, "Contracted", "Healthy"))
+dim(train)
+str(train)
+```
+
+```{r}
+```
+# Exploratory Data Analysis and Data Visualization
+First of all, demonstarting the distribution of all the numeric columns by using histogram. Excluding those binary attributes, some of them are right skewed while some of them do not follow the pattern of nornal distribution. 
+```{r warning=FALSE, fig.width=12, fig.height=8, cache=TRUE}
+train %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(x = value)) +
+  facet_wrap(~key, scales = "free") +
+  geom_histogram(bins = 15, fill = "lightblue", color = "white") +
+  labs(title = "Show Distribution of Each Numeric Column")
+```
+
+```{r}
+```
+<br>
+Before visualizing all the data, we might need to visualize the target variable at first. It is good to see that the target variable is balenced. 
+```{r}
+barplot(table(train$Disease_Type), col = c("lightblue","pink"), main = "Barplot of Disease", ylab = "Count")
+```
+<br>
+**Stacked Barplots for Gender, Cholesterol, and Glucose**
+<br>
+Then, using barplots to display the frequency of categorical variables, such as Gender, Cholesterol, and Glucose.
+<br>
+<br>
+* **Gender**: The number of male who contracts the disease is similar with that of male who does not. Likewise, The number of female who contracts the disease is slightly higher than that of female who does not. However, it is easy to find out that the number of female who gets the disease (which is 14,107) is significantly higher than that of male (which is 7,782). Similar pattern could be witnessed from the group of people who does not get the disease. Then, one assumption could be made is that female has a higher chance to get contracted. However, **given that the number of female records in the dataset is higher than that of male, the assumption might not be confirmed.**
+<br>
+<br>
+* **Cholesterol**: The number of people who contracts the disease is similar with that of people who does not. For those who got this disease, the proportion of people who has a normal Cholesterol value is the highest (which is 14,338). For those who has "High" or "Too.High" in Cholesterol value, the number of "Too.High" is higher than that of people who has a high Cholesterol value in the contracted group. On the contrary, the pettern is quit the opposite for the healthy group. Hence, we can make an **assumption that people who has an rather high Cholesterol value tends to contract that disease**.
+<br>
+<br>
+* **Glucose**: For those who get this disease, the proportion of people who has a normal Glucose value is the highest (which is 17,859). Then the number of people who has a rather high Glucose value is slightly higher than that of people who has a high Cholesterol value. Similarly, the number of "Too.High" is higher than that of "High" in contracted group. In the healthy group, the conclusion is different. Then, it seems that **a higher value in Glucose could also contributes to the chance of getting the disease**.
+<br>
+```{r warning=FALSE, fig.width=18, fig.height=18}
+gender <- as.data.frame(table(train$Gender,train$Disease_Type))
+colnames(gender) <- c("Gender","Disease","Count")
+Gender.plot <- ggplot(gender, aes(x = Disease, y = Count, fill = Gender, label = Count)) +
+  geom_bar(stat = "identity") +
+  geom_text(size = 5, position = position_stack(vjust = 1.1)) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Paired")
+
+Cholesterol <- as.data.frame(table(train$Cholesterol, train$Disease_Type))
+colnames(Cholesterol) <- c("Cholesterol","Disease","Count")
+Cholesterol.plot <- ggplot(Cholesterol, aes(x = Disease, y = Count, fill = Cholesterol, label = Count)) +
+  geom_bar(stat = "identity") +
+  geom_text(size = 5, position = position_stack(vjust = 1)) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Paired")
+
+Glucose <- as.data.frame(table(train$Glucose, train$Disease_Type))
+colnames(Glucose) <- c("Glucose","Disease","Count")
+Glucose.plot <- ggplot(Glucose, aes(x = Disease, y = Count, fill = Glucose, label = Count)) +
+  geom_bar(stat = "identity") +
+  geom_text(size = 5, position = position_stack(vjust = 1)) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Paired")
+
+ggarrange(Gender.plot, Cholesterol.plot, Glucose.plot, labels = c("Gender", "Cholesterol", "Glucose"), ncol = 2, nrow = 2)
+```
+<br> 
+<br> 
+Next, we might want to further explore the data distribution for contracted group in terms of continuous data type column, such as Age, BMI, Lower Blood Pressure, and Higher Blood Pressure. Here, Age and BMI will be displayed together while the two type of Blood Pressure will be displayed together.
+<br>
+<br> 
+**Barplots for Age and BMI**
+<br>
+* **Age**: For the healthy group, the distribution does not have certain fix pattern. For the disease contracted group, it seems that the number of people increases with the increases of age. Hence, we can make an assumption that **elder people tends to get this disease**.
+<br>
+<br>
+* **BMI**: To better visualize the plot, we can round the BMI value to whole digit number. For both the healthy and contracted groups, the distributions seem quite similar. However, the **BMI value of healthy people is generally higher than that of contracted patient**.
+<br>
+```{r warning=FALSE, fig.width=12, fig.height=12}
+Age <- as.data.frame(table(train$Age, train$Disease_Type))
+colnames(Age) <- c("Age","Disease","Count")
+Age.plot <- ggplot(Age, aes(x = Age, y = Count, fill = Disease)) +
+  geom_col() + 
+  ylim(c(0,1500)) +
+  geom_text(aes(label = Count), vjust = -0.5) +
+  facet_grid(Disease ~ ., scales = "free") +
+  theme_minimal()
+
+bmi <- as.data.frame(table(round(train$BMI,0), train$Disease_Type))
+colnames(bmi) <- c("BMI","Disease","Count")
+BMI.plot <- ggplot(bmi, aes(x = BMI, y = Count, fill = Disease)) +
+  geom_col() + 
+  facet_grid(Disease ~ ., scales = "free") +
+  ylim(c(0,2800)) +
+  geom_text(aes(label = Count), vjust = -0.5) +
+  theme_minimal()
+
+ggarrange(Age.plot, BMI.plot, labels = c("Age", "BMI"), ncol = 1, nrow = 2) 
+```
+<br> 
+**Barplots for Blood Pressure**
+<br>
+* **Low Blood Pressure**: To better visualize the plot, we can use filter to eliminate records with count that is lower than 10. Then, compared with healthy group, **people with higher lower blood pressure seems to have a higher possibility to contract the disease**. Namely, people with the disease has higher cholesterol level.
+<br>
+<br>
+* **High Blood Pressure**: To better visualize the plot, we can use filter to eliminate records with count that is lower than 10. Comparing with the result obtained from the Low.Blood.Pressure barplot, similar conclusion could be made. The conclusion is obvious since the number of people who gets disease is definitly higher than that of people who does not.
+<br>
+```{r warning=FALSE, fig.width=12, fig.height=10}
+Low.Blood <- as.data.frame(table(train$Low.Blood.Pressure, train$Disease_Type))
+colnames(Low.Blood) <- c("Low.Blood.Pressure","Disease","Count")
+Low.Blood <- Low.Blood %>% filter(Count >= 10)
+Low.Blood.plot <- ggplot(Low.Blood, aes(x = Low.Blood.Pressure, y = Count, color = Disease, fill = Disease)) +
+  geom_col() +
+  facet_grid(Disease ~ ., scales = "free") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylim(c(0,13000)) +
+  geom_text(aes(label = Count), vjust = -0.5) +
+  theme_minimal()
+
+High.Blood <- as.data.frame(table(train$High.Blood.Pressure, train$Disease_Type))
+colnames(High.Blood) <- c("High.Blood.Pressure","Disease","Count")
+High.Blood <- High.Blood %>% filter(Count >= 10)
+High.Blood.plot <- ggplot(High.Blood, aes(x = High.Blood.Pressure, y = Count, color = Disease, fill = Disease)) +
+  geom_col() +
+  facet_grid(Disease ~ ., scales = "free") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  ylim(c(0,13000)) +
+  geom_text(aes(label = Count), vjust = -0.5) +
+  theme_minimal()
+
+ggarrange(Low.Blood.plot, High.Blood.plot, labels = c("Low.Blood", "High.Blood"), ncol = 1, nrow = 2) 
+```
+<br> 
+**Barplot for Alcohol**
+<br>
+* **Alcohol**: Summarizing this barplot, we can find that, for people who drinks, the number of contracted  patient is higher than that of healthy patient. On the contrary, for those who do not drink alcohol, the pattern is quit the opposite even though the gap is quit small. If we taking gender into consideration, we can find that the number of contracted female who drinks a lot is higher than that of contracted male who also drinks a lot. Then, **drinking might have a minor influence the disease contract possibility**. 
+```{r warning=FALSE, fig.width=12, fig.height=8}
+Alcohol <- as.data.frame(table(train$Alcohol, train$Gender, train$Disease_Type))
+colnames(Alcohol) <- c("Alcohol","Gender","Disease","Count")
+Alcohol$Alcohol <- as.factor(ifelse(Alcohol$Alcohol == 0, "Drink", "Not Drink"))
+ggplot(Alcohol, aes(x = Alcohol, y = Count, color = Disease, fill = Disease)) +
+  geom_col(stat="identity", position="dodge") +
+  facet_grid(Gender ~ ., scales = "free") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  theme_minimal()
+```
+
+```{r}
+str(train)
+```
+## PCA Analysis & Correlation Plot
+We can also use PCA techniques and draw correlation plot to discover the relationships among these columns.
+<br>
+Before continuing that, we might need to convert all the categorical data to numeric data via dummy function.
+```{r}
+dummies <- train[,sapply(train, is.numeric)]
+dmy <- caret::dummyVars("~Gender", data = train, fullRank = T)
+dummies <- cbind(dummies, data.frame(predict(dmy, newdata = train)))
+dmy <- caret::dummyVars("~Cholesterol", data = train, fullRank = F)
+dummies <- cbind(dummies, data.frame(predict(dmy, newdata = train)))
+dmy <- caret::dummyVars("~Glucose", data = train, fullRank = F)
+dummies <- cbind(dummies, data.frame(predict(dmy, newdata = train)))
+```
+Re-arrange the dummies data frame.
+```{r}
+dummies <- dummies[,c(1,11,2,3,4,5,6,7,8,9,12,13,14,15,16,17,10)]
+str(dummies)
+```
+Same process for test dataset
+```{r}
+dummies_test <- test[,sapply(test, is.numeric)]
+dmy_test <- caret::dummyVars("~Gender", data = test, fullRank = T)
+dummies_test <- cbind(dummies_test, data.frame(predict(dmy_test, newdata = test)))
+dmy_test <- caret::dummyVars("~Cholesterol", data = test, fullRank = F)
+dummies_test <- cbind(dummies_test, data.frame(predict(dmy_test, newdata = test)))
+dmy_test <- caret::dummyVars("~Glucose", data = test, fullRank = F)
+dummies_test <- cbind(dummies_test, data.frame(predict(dmy_test, newdata = test)))
+dummies_test <- dummies_test[,c(1,2,11,3,4,10,5,6,7,8,9,12,13,14,15,16,17)]
+```
+**PCA Analysis**
+<br>
+We can use PCA analysis to visualize how this data correlate with each other and in which degree this data stays significantly to the dataset.
+This is easy for now since we are using the whole dataset, but will require some modifications for model fitting with a train and test set.
+```{r fig.width=8, fig.height=8}
+# pca analysis
+vis_pca <- function(df){
+  res.pca <- prcomp(df, scale = TRUE)
+  fviz_pca_var(res.pca,
+               col.var = "contrib", # Color by contributions to the PC
+               gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+               repel = TRUE     # Avoid text overlapping
+  )
+}
+vis_pca(dummies[,-c(17)])
+```
+<br>
+The PCA plot is rather messy. We need to drop columns that have less contribution to the dataset or columns that have similar direction. Then we can get features (or columns) that are significant to the dataset. 
+```{r fig.width=8, fig.height=8}
+dummies_pca <-dummies[,c(3,4,6,10,11,12,13)]
+vis_pca(dummies_pca)
+```
+<br>
+**Correlation Plot**
+<br>
+Since some models are sensitive towards irrelevant attributes & outliers and noisy data, we need to use the **standardized and centuralized dataset**.
+<br>
+It is important to do Data Pre-Processing within the sample used to evaluate each model, to ensure that the results account for all the variability in the test. If the data set say normalized or standardized before the tuning process, it would have access to additional knowledge (bias) and not give an as accurate estimate of performance on unseen data.
+```{r}
+pre_process <- preProcess(dummies, method = c("scale", "center"))
+dummies_scale <- predict(pre_process, newdata = dummies)
+```
+Same process for test dataset.
+```{r}
+pre_process_test <- preProcess(dummies_test, method = c("scale", "center"))
+dummies_test <- predict(pre_process_test, newdata = dummies_test)
+dummies_test <- dummies_test[,-c(1)]
+```
+Then, we can generate a correlation plot to further investigate the relationships amongh those variables.
+<br>
+<br>
+After analyzing the plot, there are some obvious correlations here:
+1. Weight and BMI has strong positive correlation since BMI derives from this column. <br>
+2. High.Blood.Pressure ("Normal") and Low.Blood.Pressure ("Normal") are strongly positively correlated with the other two factors in their variable ("High" and "Too.High"). <br>
+3. We can summarise that **Age, Blood pressure (both), and Cholesterol ("High" and "Too.High") have a positive relationship with the disease**. <br>
+4. **Weight, BMI, and Glucose are slightly negatively correlated with the disease.** <br>
+5. Among those variables, **Blood pressure have a strong relationshio among those features**.
+<br> 
+<br>
+Even though the multicollinearity will theoratically impact the performance of regression models, we will still going to use all of the dummy variable in order to find out the most important feature.
+```{r fig.width=7, fig.height=7}
+cor_matrix <- cor(dummies_scale[complete.cases(dummies_scale), sapply(dummies_scale, is.numeric)], method = "pearson")
+corrplot(cor_matrix, type = "upper")
+```
+
+```{r}
+
+```
+# Models Construction
+Now it is time to establish models. In this case, we will using several Classification Models to fit the dataset since this problem is a classification and regression problem. Each of the model has its own merits and disadvantages. Hence, we need to use several performance evaluation matrix or techniques to assess model performance. Those models are: 
+<br>
+* Naive Bayes Classifier <br>
+* KNN or k-Nearest Neighbors <br>
+* Random Forest <br>
+* Gradient Boosting Machine <br>
+* Linear Support Vector Machines <br>
+* SVM with RBF Kernal <br>
+```{r}
+```
+## Data Sampling
+To evaluate the model performance, we need to splite the tagged dataset (which is the train dataset) into two. The sample_train subset will be used for model training and tunning while the sample_test will be used to test predict ability by calculating Accuracy, Specificity, Recall, and ROC value. Besides, since the original train dataset contains at least 40,000 rows of records, we need to sample a subset (which contains 10,000 records) from it in order to reduce the cost of time.
+```{r}
+set.seed(2000)
+dummies_scale$Disease.Type <- as.factor(train$Disease)
+dummies_sample <- sample_n(dummies_scale[,-c(17)], 10000)
+```
+Randomly sample the subset into two. The sample_train contains 70% of the original subset data while the sample_test contains the rest of them.
+```{r}
+train_index <- createDataPartition(dummies_sample$Disease, p = 0.7, list = FALSE)
+sample_train <- dummies_sample[train_index, ]
+sample_test <- dummies_sample[-train_index, ]
+```
+<br>
+**Naive Bayes Classifer**
+<br>
+Unlike other models, Naive Bayes classifiers is a simple probabilistic classifiers based on Bayes' theorem. The disadvantage of this model is that the independence assumption. Imaging that if you have no occurrences of certain labels, then the frequency-based probability estimate will be zero. Given Naive-Bayes' conditional independence assumption, when all the probabilities are multiplied you will get zero and this will affect the posterior probability estimate. 
+<br>
+Besides, the model performace is sensitive to skewed data. Nevertheless, in this case, we don't have such a concern since the target variable balanced distributed. What's more, Naive Bayes perform poorly when there is multicollinearity in the data.
+<br>
+<br>
+**Model Tunning**
+<br>
+We can tune the few hyperparameters that a naïve Bayes model has:<br>
+* **usekernel**: allows us to use a kernel density estimate for continuous variables versus a guassian density estimate. <br>
+* **adjust**: allows us to adjust the bandwidth of the kernel density (larger numbers mean more flexible density estimate). <br>
+* **fL**: allows us to incorporate the Laplace smoother.
+<br>
+It is worthwhile to point out that we use the preProc function to normalize with Box Cox and reducing with PCA.
+```{r message=FALSE, warning=FALSE, cache=TRUE}
+model_nb <- train(Disease.Type ~.,
+                  data = sample_train,
+                  method = 'nb',
+                  preProc = c("BoxCox", "pca"),
+                  trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3),
+                  tuneGrid = expand.grid(fL = 0:5, usekernel = c(TRUE, FALSE), adjust = seq(0, 5, by=1)))
+plot(model_nb)
+resampleHist(model_nb)
+ggplot(varImp(model_nb), main = "Variable Importance with NBC")
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that the combination of **setting usekernal as "TRUE" (density estimation is being used rather then normal density), setting adjust as '1', and setting fL as "0" (no laplace smotthing effect)** is most beneficial for NBC model in this dataset. 
+<br>
+```{r}
+model_nb$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+Display the model performance. The accuracy rate is 0.6896 which fine but is not very satisfactory. The accuracy rate is within the confidence Interval, implying that the result is trustful. The sensitivity (qhich is 0.7171) seems acceptable while specificity (which is 0.6627) are similar with Accuracy.
+```{r warning=FALSE, message=FALSE}
+predict_nb <- predict(model_nb, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_nb <- confusionMatrix(predict_nb, as.factor(sample_test$Disease.Type))
+Matrix_nb
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_nb), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names <- as.data.frame(c("Accuracy", "Sensitivity", "Specificity", "Precision", "Recall", "ROC"))
+rownames(Per_names) <- c("Accuracy", "Sensitivity", "Specificity", "Precision", "Recall", "ROC")
+colnames(Per_names) <- "NBC"
+Per_names$NBC <- c(as.numeric(Matrix_nb$overall[1]), as.numeric(Matrix_nb$byClass[1]), as.numeric(Matrix_nb$byClass[2]), as.numeric(Matrix_nb$byClass[5]), as.numeric(Matrix_nb$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the NBC model to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE, cache=TRUE}
+result <- data.frame()[1:dim(test)[1], ]
+result$ID <- 1:dim(test)[1]
+result$NBC <- predict(model_nb, newdata = dummies_test, type = "raw")
+rownames(result) <- 1:dim(test)[1]
+```
+<br>
+**K Nearest Neighbor**
+<br>
+KNN is a supervised learning family of algorithms. It is also a non parametric and instance-based learning algorithm. Despite of having the merits of "easy implemnetation" and "no training period", KNN model has four major disadvantages. 
+<br>
+They are:<br>
+1. **Does not work well with large dataset**: In large datasets, the cost of calculating the distance between the new point and each existing points is huge which degrades the performance of the algorithm.<br>
+2. **Does not work well with high dimensions**: The KNN algorithm doesn't work well with high dimensional data because with large number of dimensions, it becomes difficult for the algorithm to calculate the distance in each dimension.<br>
+3. **Need feature scaling**: We need to do feature scaling before applying KNN algorithm to any dataset. If we don't do so, KNN may generate wrong predictions. We have already done this before this section.<br>
+4. **Sensitive to noisy data, missing values, and outliers**: KNN is sensitive to noise in the dataset. Outliers need to be removed.
+<br>
+<br>
+**Model Tunning**
+<br>
+We can tune the few hyperparameters that a knn model has: 
+<br>
+* **k**: Number of neighbors (K). A small value for K provides the most flexible fit, which will have low bias but high variance. Larger values of K will have smoother decision boundaries which means lower variance but increased bias.
+```{r warning=FALSE, message=FALSE, cache=TRUE}
+model_KNN <- train(Disease.Type ~ .,
+                   data = sample_train,
+                   method = "knn",
+                   trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3),
+                   tuneGrid = data.frame(k = seq(20:80)))
+plot(model_KNN)
+resampleHist(model_KNN)
+ggplot(varImp(model_KNN), main = "Variable Importance with KNN")
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that **setting K value as "47"** is most beneficial for the KNN model in this dataset. The Accuracy plot shows a general trends in the increase in performance with K value and that the larger value of k is probably preferred (range between 20 to 80).
+```{r}
+model_KNN$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+Display the model performance. The accuracy rate is 0.7152 which is slightly higher than that of NBC model. The specificity (which is 0.6653) is slightly higher than the value of NBC model (which is 0.6627). Compared with the sensitivity value of NBC model (0.7171), the value of KNN (0.7603) is significantly higher, indicating that KNN has a better performance in detecting every possible patient. 
+```{r}
+predict_KNN <- predict(model_KNN, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_KNN <- confusionMatrix(predict_KNN, as.factor(sample_test$Disease.Type))
+Matrix_KNN
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_KNN), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names$KNN <- c(as.numeric(Matrix_KNN$overall[1]), as.numeric(Matrix_KNN$byClass[1]), as.numeric(Matrix_KNN$byClass[2]), as.numeric(Matrix_KNN$byClass[5]), as.numeric(Matrix_KNN$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the KNN model to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE, cache=TRUE}
+result$knn <- predict(model_KNN, newdata = dummies_test, type = "raw")
+```
+
+```{r}
+```
+<br>
+**Random Forest**
+<br>
+Random Forest is a powerful algorithm which based on the Ensemble Learning technique (bagging). In this way it reduces overfitting problem in decision trees and also reduces the variance and therefore improves the accuracy. Besides, it works well with both categorical and continuous variables and capable of automatically handling missing values. Unlike KNN, RF is robust to outliers. 
+<br>
+The disvantages are also obvious. The first is the complexity given that RF creates a lot of trees and combines their outputs. This casue thye other problem which is Longer Training Period.
+<br>
+<br>
+**Model Tunning**
+<br>
+We can tune the few hyperparameters that a RF model has:<br>
+* **ntree**: the number of trees to grow. Larger the tree, it will be more computationally expensive to build models.<br>
+* **mtry**: how many variables we should select at a node split. The default value is p/3 for regression and sqrt(p) for classification. We should always try to avoid using smaller values of mtry to avoid overfitting.<br>
+* **nodesize**: how many observations we want in the terminal nodes. This parameter is directly related to tree depth. Higher the number, lower the tree depth. With lower tree depth, the tree might even fail to recognize useful signals from the data. 
+<br>
+```{r warning=FALSE, message=FALSE, cache=TRUE}
+model_RF <- train(Disease.Type ~ .,
+                  data = sample_train,
+                  method = "rf",
+                  ntree = 1500,
+                  trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3),
+                  tuneGrid = expand.grid(mtry = 1:5))
+plot(model_RF)
+resampleHist(model_RF)
+ggplot(varImp(model_RF), main = "Variable Importance with RF")
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that **setting mtry value as "2" and setting ntree as "1500"** is most beneficial for the RF model in this dataset.
+```{r}
+model_RF$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+After tuning, we have achieved an overall accuracy of 0.7246, which is the highest up to now. The sensitivity is 0.7927, which is also the highest among the given three models. The specificity (0.6581), however, is lowest among those three models'.
+```{r}
+predict_RF <- predict(model_RF, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_RF <- confusionMatrix(predict_RF, as.factor(sample_test$Disease.Type))
+Matrix_RF
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_RF), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names$RF <- c(as.numeric(Matrix_RF$overall[1]), as.numeric(Matrix_RF$byClass[1]), as.numeric(Matrix_RF$byClass[2]), as.numeric(Matrix_RF$byClass[5]), as.numeric(Matrix_RF$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the RF model to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE}
+result$RF <- predict(model_RF, newdata = dummies_test, type = "raw")
+```
+
+```{r}
+```
+<br>
+**Gradient Boosting Machine**
+<br>
+XGB is a supervised learning algorithm that uses an ensemble of adaptively boosted decision trees. It has though traditionally slower than lightGBM.
+<br>
+<br>
+**Model Tunning**
+<br>
+We can tune the few hyperparameters that a XGBoost model has:<br>
+* **nrounds**: The max number of iterations. <br>
+* **eta**: Step size of each boosting step. After each boosting step, we can directly get the weights of new features, and eta shrinks the feature weights to make the boosting process more conservative.<br>
+* **max_depth**: Maximum depth of the tree. Increasing this value will make the model more complex and more likely to overfit. <br>
+* **gamma**: Minimum loss reduction required to make a further partition on a leaf node of the tree. The larger gamma is, the more conservative the algorithm will be.<br>
+* **min_child_weight**: Minimum sum of instance weight (hessian) needed in a child. The larger min_child_weight is, the more conservative the algorithm will be.<br>
+* **subsample**: Subsample ratio of the training instances. Setting it to 0.5 means that XGBoost would randomly sample half of the training data prior to growing trees. and this will prevent overfitting. Subsampling will occur once in every boosting iteration.<br>
+* etc.<br>
+```{r warning=FALSE, message=FALSE, cache=TRUE}
+model_XGB <- train(Disease.Type ~ .,
+                   data = sample_train,
+                   method = "xgbTree",
+                   trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3),
+                   tuneGrid = expand.grid(nrounds = c(25,50,100,150,200,250,300),
+                                          max_depth = c(2,3,5,7,9),
+                                          colsample_bytree = seq(0.1, 1, length.out = 5),
+                                          eta = 0.1,
+                                          gamma=0,
+                                          min_child_weight = 1,
+                                          subsample = 1))
+plot(model_XGB)
+resampleHist(model_XGB)
+ggplot(varImp(model_XGB), main = "Variable Importance with XGB")
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that the combination of **setting nrounds = "150 or 100", max_depth = "2 or 3", eta = "0.1", gamma = "0", colsample_bytree = "0.550", min_child_weight = "1", and subsample = "1"** is most beneficial for the XGBoost model in this dataset.
+```{r}
+model_XGB$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+After tuning, we have achieved an overall accuracy of 0.7306, which is slightly higher than that of RF. The sensitivity is 0.7725, which is the second highest. The specificity (which is 0.6897), is the highest up to now.
+```{r}
+predict_XGB <- predict(model_XGB, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_XGB <- confusionMatrix(predict_XGB, as.factor(sample_test$Disease.Type))
+Matrix_XGB
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_XGB), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names$XGBoost <- c(as.numeric(Matrix_XGB$overall[1]), as.numeric(Matrix_XGB$byClass[1]), as.numeric(Matrix_XGB$byClass[2]), as.numeric(Matrix_XGB$byClass[5]), as.numeric(Matrix_XGB$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the XGBoost model to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE}
+result$XGBoost <- predict(model_XGB, newdata = dummies_test, type = "raw")
+```
+
+```{r}
+```
+<br>
+**Linear Support Vector Machine**
+<br>
+Support Vector Machines (SVM) is one of the sophisticated supervised ML algorithms that can be applied for both classification and regression problems. 
+<br>
+It is robust to outliers. But the main disadvantage of the SVM algorithm is that it has several key parameters that need to be set correctly to achieve the best classification results for any given problem. Besides, it is not suitable for large dataset. Here, for this linear SVM model, we only consider hyper-parameter "C".
+<br>
+<br>
+**Model Tunning**
+<br>
+We can tune the few hyperparameters that a RF model has:<br>
+* **C**: The Penalty parameter C of the error term. A higher C might cause lower bias but risk of overfitting; A lower C might cause higher bias but lower variance.<br>
+* **kernel**: Specifies the kernel type to be used in the algorithm. It must be one of ‘linear’, ‘poly’, ‘rbf’, ‘sigmoid’, ‘precomputed’ or a callable.<br>
+* degree: Degree of the polynomial kernel function (‘poly’). Ignored by all other kernels.<br>
+* gamma: Kernel coefficient for ‘rbf’, ‘poly’ and ‘sigmoid’. If gamma is ‘auto’ then 1/n_features will be used instead.<br>
+* class_weight: Set the parameter C of class i to class_weight[i]C for SVC. If not given, all classes are supposed to have weight one.<br>
+* etc.<br>
+```{r warning=FALSE, message=FALSE, cache=TRUE}
+model_svm_linear <- train(Disease.Type ~ .,
+                          data = sample_train,
+                          method = "svmLinear",
+                          trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3),
+                          tuneGrid = expand.grid(C = seq(0.05, 1, 0.05)))
+plot(model_svm_linear)
+resampleHist(model_svm_linear)
+ggplot(varImp(model_svm_linear), main = "Variable Importance with Linear SVM")
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that **setting C as "0.55"** is most beneficial for the XGBoost model in this dataset. According to the Accuracy Plot, the Accuracy decrease with the increase of the cost value. 
+```{r}
+model_svm_linear$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+After tuning, we have achieved an overall accuracy of 0.7262. The sensitivity is 0.7974, which is the highest up to now. The specificity (which is 0.6568), however, is the lowest among those models.
+```{r}
+predict_svm_linear <- predict(model_svm_linear, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_svm_linear <- confusionMatrix(predict_svm_linear, as.factor(sample_test$Disease.Type))
+Matrix_svm_linear
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_svm_linear), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names$Linear_SVM <- c(as.numeric(Matrix_svm_linear$overall[1]), as.numeric(Matrix_svm_linear$byClass[1]), as.numeric(Matrix_svm_linear$byClass[2]), as.numeric(Matrix_svm_linear$byClass[5]), as.numeric(Matrix_svm_linear$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the Linear SVM model to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE}
+result$Linear_SVM <- predict(model_svm_linear, newdata = dummies_test, type = "raw")
+```
+
+```{r}
+```
+<br>
+**Support Vector Machine with Non-linear Kernel: RBF**
+<br>
+Here, for this SVM model with RBF Kernel, we only consider hyper-parameter "C" and "Sigma" (which is also called gamma). The default gamma value should be 1/k (k is the number of features inside the dataset). This hyper-parameter decides the distribution of data once the data have been projected. Generally, a higher gamma might cause a smaller number of support vector generated by the model, which directly influence the computational speed.
+```{r warning=FALSE, message=FALSE, cache=TRUE}
+model_svm_rbf <- train(Disease.Type ~ .,
+                       data = sample_train,
+                       method = "svmRadial",
+                       tuneGrid = expand.grid(sigma = seq(0, 0.5, 0.1), C = seq(0.05, 0.5, 0.1)),
+                       trControl = trainControl(method = "repeatedcv", number = 10, repeats = 3))
+plot(model_svm_rbf)
+resampleHist(model_svm_rbf)
+ggplot(varImp(model_svm_rbf, main = "Variable Importance with model_svm_rbf"))
+```
+<br>
+Combining the results of top 5 cases with the highest Accuracy rates with the results displayed above, we can conclude that the combination of setting **sigma = 0.1 and C = 0.45** is most beneficial for the XGBoost model in this dataset. 
+```{r}
+model_svm_rbf$results %>%
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+```
+**Performance Display**
+<br>
+After tuning, we have achieved an overall accuracy of 0.7216, which is a quit normal performance compared with others'. The sensitivity is 0.7468, which is slightly higher than KNN's. The specificity is 0.6970, which is the highest among those 6 models.
+```{r}
+predict_svm_rbf <- predict(model_svm_rbf, newdata = sample_test[,-c(17)], type = "raw")
+Matrix_svm_rbf <- confusionMatrix(predict_svm_rbf, as.factor(sample_test$Disease.Type))
+Matrix_svm_rbf
+```
+**ROC line**
+<br>
+Plotting Receiver Operating Characteristics (ROC) curve and displaying the value of Area Under the Curve (AUC).
+```{r}
+roc <- roc(sample_test$Disease.Type, as.numeric(predict_svm_rbf), levels = c(0, 1), direction = "<")
+plot(roc)
+auc(roc)
+```
+Storing the performance index into Per_names data frame.
+```{r}
+Per_names$SVM_RBF <- c(as.numeric(Matrix_svm_rbf$overall[1]), as.numeric(Matrix_svm_rbf$byClass[1]), as.numeric(Matrix_svm_rbf$byClass[2]), as.numeric(Matrix_svm_rbf$byClass[5]), as.numeric(Matrix_svm_rbf$byClass[6]), as.numeric(roc$auc))
+```
+Utilizing the SVM model with RBF kernel to predict the classification result of test data. Storing these results to the result data frame.
+```{r warning=FALSE}
+result$SVM_RBF <- predict(model_svm_rbf, newdata = dummies_test, type = "raw")
+```
+Then use write.csv function to save the document to local directory.
+```{r}
+write.csv(result, "xwanyue_hw03_result.csv")
+```
+
+```{r}
+```
+
+# Model Performance Evaluation
+<br>
+One should run the models several times with different hyper-parameters in order to optimize the results. To evaluate the performance of these models, we can use **Model Performance Metrics** to calculate the Accuracy, Precision (percent of predicted positive that are correct), Recall (percent of positive cases that are correctly predicted), and ROC. 
+<br>
+<br>
+```{r}
+
+```
+### Model Performance Validation
+For the Model Performance Validation, there are mainly two types, which are Cross Validation and Bootstrapping. <br>
+* **Cross Validation** splits the available dataset to create multiple datasets. <br>
+* **Bootstrapping** method uses the original dataset to create multiple datasets after resampling with replacement. <br>
+* However, **Bootstrapping it is not as strong as Cross validation** when it is **used for model validation** since that bootstrapping is more about building ensemble models or just estimating parameters. <br> In others words, Cross-validation evaluates how well an algorithm generalizes, whereas bootstrapping actually helps the algorithm to generalize better.<br>
+* Hence, **we decide to use 10-fold Crossvalidation for model performance validation** even though Bootstrapping can reduce the variance of a classification algorithm that is based on a single model.
+<br>
+<br>
+```{r}
+
+```
+### Model Summary
+According to the analysis illustrated above, there are the **Summary** of these models:
+<br>
+As our problem is a part of classification, accuracy will be mesuared instead of the RMSE. "Accuracy" shows how many times a model predicted the right value/ class among all data set. 
+<br>
+<br>
+* If we only look at the **Accuracy**, RF and XGBoost seem to have a better performance after several times of running. Then it should be Linear_SVM and SVM_RBF. NBC generally performed less satisfactory compared with other models. If we look at the plot, the boxplot indicates that generally, XGBoost seems to have a highest accuracy rate. Next should be SVM_RBF. The last one is, still, the NBC model.
+<br>
+<br>
+* In this case, sensitivity is important than specificity due to the nature of this classification. Since we do not want to miss any potential patient, a higher sensitivity value might help us to achive this goal. If we look at **Sensitivity** Value, it is easy to find that RF and SVM_Lieanr perform better than others.NBC, again, has the lowest value.
+<br>
+<br>
+* Generally, model with a ROC value that is higher than 0.75 is realiable. If we look at **ROC** value, XGBoost still has the highest result while all of the rest models make no distinction of rank despite of NBC and KNN.
+<br>
+```{r}
+Per_names
+```
+Next, we can use some function to visualize the modelos performance.
+```{r}
+model_comparison <- resamples(list(NBC = model_nb,
+                                   KNN = model_KNN,
+                                   RF = model_RF,
+                                   XGBoost = model_XGB, 
+                                   SVM_Linear = model_svm_linear, 
+                                   SVM_RBF = model_svm_rbf))
+scales <- list(x = list(relation = "free"), y = list(relation = "free"))
+bwplot(model_comparison, scales = scales)
+```
+<br>
+<br>
+**Recommendation & Limitation**
+<br>
+For this case, one should investigate the relationships between hyperperameter and models. Due to the CPU limits, we only use several basic hyper-perameter for model tuning. Hence, we cannot guarantee that we have found out the optimized results. Besides, we only use 10,000 records of data, which also might cause some bias.
+<br>
+
+**Finally**
+<br>
