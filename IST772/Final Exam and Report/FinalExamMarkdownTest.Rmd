@@ -1,0 +1,57 @@
+---
+title: "FinalExamMarkdownTest"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+```
+
+## Final Exam Markdown Test
+
+The IST722 final exam has two parts. The first part, which will be acocmplished in class,
+will involve using a markdown file to produce diagnostics, graphs, and statistical output
+for your report. Obviously you will need your laptop to be able to do this. Just before the exam
+I will provide a template Rmd file to which you will add your own analytical choices. I will also provide your own custom datasets. At the end of that class session, you will submit 
+a "knitted" version of your output to Blackboard. This output will then be the sole 
+basis of your final report.
+
+This file provides a preview of the Rmd file you will receive for the exam. When you click 
+the **Knit** button at the top of the code window an html document will be generated that
+includes both content as well as the output of any embedded R code chunks within the 
+document. You can embed an R code chunk like this:
+
+```{r summary}
+summary(mtcars)
+```
+
+## Including Plots for your Report
+
+Your report will be enhanced by providing helpful graphs that support the arguments you
+are trying to make about your data. Code elements in a markdown file can be used to create
+graphs that will appear in your html output. For example:
+
+```{r plot, echo=FALSE}
+boxplot(mpg ~ am, data=mtcars)
+```
+
+Note that the `echo = FALSE` parameter was added to the previous code chunk to prevent 
+printing of the R code that generated the plot. This is a stylistic choice, but it should
+generally be avoided for the final exam, because you (and I) will want to have a clear
+record of the commands you used to generate your output.
+
+One very important aspect of doing your final exam in this format is that you will have to
+plan in advance what analyses you will need to conduct. So one of your main tasks during the
+final class session will be to choose appropriate analyses for your output. For example, the
+following code produces results for both a t-test and a regression analysis.
+
+```{r tests, echo=FALSE}
+t.test(mpg ~ am, data=mtcars)
+summary(lm(mpg ~ hp + wt + gear, data=mtcars))
+```
+
+Click the **Knit** button to create and inspect your html document. If the knitting process 
+is successful an html file will be submitted to your current working directory. 
+Find that file and submit it to the dropbox on Blackboard to show that you have 
+successfully completed this process.
