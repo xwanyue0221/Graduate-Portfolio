@@ -49,7 +49,6 @@ The final project of IST664 Natural Language Processing is to select a topic and
 <br>
 <br>
 ### Author Information
-<br>
 - Created: Wanyue Xiao<br>
 - SUID: 720633297<br>
 Academic Email: xwanyue@syr.edu<br>
