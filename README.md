@@ -3,8 +3,7 @@ This is the demonstration of Wanyue Xiao, a graduate student whose major is Appl
 
 This repository is the Graduation Portfolio Milestone for my master's degree of Applied Data Science at Syracuse University. It will showcase the academic projects I did in the previous coursework and my knowledge about data science and machine learning.
 
-## 1. Paper: How data science master program has cultivated me?
-
+## 1. Paper: How I Would Learn Data Science?
 Paper-link
 This paper is basically a summary of what I have learned during the 2 years in the master's program of Applied Data Science - the knowledge and critical thinkings regarding data science, and the technical skills that are required to succeed in this field.
 
@@ -20,3 +19,37 @@ B) **IST 769**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf)
 <br>
 The final project of IST769 Advanced Big Data Management is to select a database related topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
 <br>
+C) **IST 664**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+D) **IST 700**: [700](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+E) **IST 707**: [707](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+F) **IST 718**: [718](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+G) **IST 659**: [659](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+H) **IST 769**: [769](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+D) **IST 736**: [736](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+<br>
+The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+<br>
+
+Created: Wanyue Xiao
+SUID: 720633297
+Academic Email: xwanyue@syr.edu
+Program: M.S. in Applied Data Science
+LinkedIn Website: www.linkedin.com/in/wanyue-xiao-60688196
