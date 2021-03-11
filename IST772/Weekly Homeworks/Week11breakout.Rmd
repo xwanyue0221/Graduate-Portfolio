@@ -1,0 +1,218 @@
+---
+title: "Week11breakout"
+author: "Jeff Stanton"
+date: "10/20/2020"
+output: html_document
+co_author: "Wanyue Xiao"
+
+# Sttribution statement:
+# 1. I modified this file based on an original file provided by the professor, including
+# the resuage of code embedded in the rmd document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Instructions
+
+Your instructor will supply a CSV file called bWeek9hiringData.csv. This data set contains n=295 survey responses from raters who participated in a hiring process. The dependent variable, “hired,” is a binary variable with 0 for a candidate who was subsequently not hired and 1 for a candidate who was. The “recommend” variable is each participant’s recommendation of whether to hire, with 1 = “Definitely Hire,” 2 = “Possibly Hire,” and 3 = “Do Not Hire.” In addition, there are six belief questions, all on 1 to 4 scales (with 1 as most favorable and 4 as least favorable) with assessments on issues like leadership and collaboration. The research question is to understand the connection between survey responses and the hiring decisions. Can survey responses predict who will be hired? The exercise has three phases: 1) create an initial logistic regression model using the recommend variable as a predictor; 2) run a Bayesian model of logistic regression; and 3) find additional predictor(s) that may improve the model.
+
+## Diagnostics
+```{r getdata}
+# Change the setwd() to where you have stored the data set
+setwd("~/Users/wanyuexiao/Downloads/week 11/")
+hiredata <- read.csv("./bWeek9hiringData.csv")
+summary(hiredata)
+```
+
+
+```{r histdata}
+par(mfrow=c(2,4))
+for (i in c(2,4:10)) hist(hiredata[[i]], main=colnames(hiredata)[i])
+par(mfrow=c(1,1))
+```
+```{r cordata}
+round(cor(hiredata[,c(2,4:10)]),2)
+```
+
+
+Take special note of the min and max of the survey variables: recommend, vision, issues, trends, consult, lead, and collab. Review histograms for each of the numeric variables to ascertain the shape of their distributions. Comment on any anomalies and what you will do about them. Examine the correlation matrix and report anything noteworthy.
+
+**Add comments about the diagnostic output here:**
+Most of the plots are right-skewed. Besides, the range of the x-axis is between 1 and 4. For the hired data, one fourth of the total number of candidates were hired. The recommend is highly correlated with the others.
+
+Next, create and interpret a basic logistic regression model using glm.
+
+## GLM Output
+
+```{r glmrun, echo=TRUE}
+glmOut <- glm(formula = hired ~ recommend, 
+              family = binomial(link="logit"), 
+              data = hiredata)
+summary(glmOut)
+confint(glmOut)
+exp(confint(glmOut))
+```
+
+
+Write a brief statement summarizing the GLM results. Is the predictor statistically significant? What is the confidence interval for the log odds? What is the confidence interval for the plain odds? 
+
+**Add your model interpretation here:**
+Yesm the predictor is statistically significant. The condifence interval for the log odds is between 0.6132966 and 2.1824546. The confidence interval for the plain odds is between 1.8465086 and 8.8680474.
+
+The plain odds version of the coefficient on the predictor is fractional. This can make interpretation of the results more difficult, particularly for non-statisticians to whom you may wish to communicate your results. Transform the recommend variable to reverse its sense and rerun the analysis.
+
+## GLM Output - Transformed Predictor 
+
+```{r glmrerun, echo=TRUE}
+hiredata$recInv <- (4 - hiredata$recommend) # What does this transformation do?
+glmOut <- glm(formula = hired ~ recInv, 
+              family = binomial(link="logit"), 
+              data = hiredata)
+summary(glmOut)
+confint(glmOut)
+exp(confint(glmOut))
+```
+Write a brief statement summarizing the revised GLM results. Make sure that you explain the transformation that created recInv and why it works properly. 
+**Add your model re-interpretation here:**
+The transformation turns the positive values to negative. Adjust the scaling of the predictors with a linear transformation to make the results more interpretable. 
+
+Next, run and interpret a pseudo-R-squared for the GLM output.
+
+## GLM Output - Pseudo R-Squared
+```{r pseudoRsquared, echo=TRUE}
+install.packages("BaylorEdPsych")
+library(BaylorEdPsych)
+PseudoR2(glmOut) 
+```
+
+Explain what a pseudo-R-squared value is for a non-statistical audience and interpret the particular values produced by this model. Given that there are several different values to choose from, one which one(s) do you focus your attention?
+
+**Add your explanation here:**
+the package is unavailable for the current version of r-studio.
+
+## Bayesian Analysis
+
+```{r bayesian1, echo=TRUE}
+# install.packages("MCMCpack")
+library(MCMCpack)
+bayesLogitOut <- MCMClogit(formula = hired ~ recInv, data = hiredata)
+summary(bayesLogitOut)
+plot(bayesLogitOut)
+```
+
+Comment on how the Bayesian (MCMC) mean of the coefficient parameter on the predictor compares with the corresponding result from the conventional glm() analysis. Review the plot of the MCMC output. Do the trace plots indicate a successful MCMC run? Does the distribution of parameter estimates on the predictor overlap with zero? 
+
+**Add your explanation of the Bayesian model output here:**
+yes, the trace plot indicate a successful MCMC run. The distribution does not overlap with zero. The 95% of the HDI interval is that mean of the coefficient 
+
+We can improve our view of the parameter estimates of the coefficient by converting the distribution from log odds to plain odds. The following code develops a histogram of the posterior distribution of plain odds:
+
+```{r bayesian2, echo=TRUE}
+recLogOdds <- as.matrix(bayesLogitOut[,"recInv"])
+recOdds <- apply(recLogOdds,1,exp)
+hist(recOdds, main=NULL) 
+abline(v=quantile(recOdds,probs=c(0.025,0.975)))
+```
+
+
+```{r bayesian3, echo=TRUE}
+mean(recOdds)
+median(recOdds)
+quantile(recOdds,probs=c(0.025,0.975))
+```
+
+Write a brief narrative reporting specific values for the mean and median of the posterior distribution of plain odds as well as the upper and lower bounds of its HDI. Describe what the HDI tells you about the relationship between recInv and hired.
+
+**Add your explanation of the posterior distribution of plain odds here:**
+The mean is slightly higher than that of median, indicating a possibility of right skewness. Besdies, the 95% HDI ranged from 2.66 to 6.46. This histogram depicting the 95% HDI gives us a direct view of the most likely range of coefficient values of the recInv in the population.
+
+Next, we will put together some evidence to help decide on an additional predictor to include in the model.
+
+## Finding An Additional Predictor
+
+```{r addlpred1, echo=TRUE}
+# Invert the sense of these other predictors so that larger is better
+hiredata$vision <- 5 - hiredata$vision
+hiredata$issues <- 5 - hiredata$issues
+hiredata$trends <- 5 - hiredata$trends
+hiredata$consult <- 5 - hiredata$consult
+hiredata$lead <- 5 - hiredata$lead
+hiredata$collab <- 5 - hiredata$collab
+
+summary(aov(hired ~ vision, data=hiredata))
+summary(aov(hired ~ issues, data=hiredata))
+summary(aov(hired ~ trends, data=hiredata))
+summary(aov(hired ~ consult, data=hiredata))
+summary(aov(hired ~ lead, data=hiredata))
+summary(aov(hired ~ collab, data=hiredata))
+```
+
+
+```{r addlpred2, echo=TRUE}
+# See which of these belief questions is the best predictor of 
+# the hiring recommendation. We probably don't want to choose a second
+# predictor that overlaps with recInv!
+lmOut <- lm(recInv ~ vision + issues + trends + consult + lead + collab,
+          data=hiredata)
+summary(lmOut)
+library(car)
+print("VIF Output to Examine Overlaps Among Predictors of recInv:")
+vif(lmOut)
+```
+
+Examine the outputs shown above and select one additional predictor to put into the model. Ideally, the additional predictor would have a strong connection to hire and a weak correlation with recInv. Modify the following code fragment to make your choice of a second predictor and then run your two predictor model.
+
+```{r glmr2pred, echo=TRUE}
+
+# set myChoice to the index of the second variable you want to choose
+predChoices <- c("vision","issues","trends","consult","lead","collab")
+myChoice <- 1 # Change this to pick one of the choices
+glmForm <- as.formula(paste0("hired ~ recInv + ",predChoices[myChoice]))
+
+glmOut <- glm(formula = glmForm, 
+              family = binomial(link="logit"), 
+              data = hiredata)
+summary(glmOut)
+exp(confint(glmOut))
+PseudoR2(glmOut)
+```
+
+Write a brief statement summarizing the two-predictor GLM results. Are both predictors significant? Interpret the pseudo-R-squared for the GLM output. Has the pseudo-R-squared increased relative to the one-predictor solution?
+
+**Add your two-predictor model interpretation here:**
+
+Next we will re-run the analysis using Bayesian estimation.
+
+## Bayesian Analysis with Additional Predictor
+```{r bayes2pred1, echo=TRUE}
+bayesLogitOut <- MCMClogit(formula = glmForm, data = hiredata)
+summary(bayesLogitOut)
+plot(bayesLogitOut)
+```
+
+```{r bayes2pred2, echo=TRUE}
+# Examine the HDI of plain odds for recInv
+recLogOdds <- as.matrix(bayesLogitOut[,"recInv"])
+recOdds <- apply(recLogOdds,1,exp) 
+hist(recOdds, main=NULL) 
+abline(v=quantile(recOdds,probs=c(0.025,0.975)))
+```
+
+
+```{r bayes2pred3, echo=TRUE}
+# Examine the HDI of plain odds for the second predictor
+secondVarLogOdds <- as.matrix(bayesLogitOut[,predChoices[myChoice]])
+secondVarOdds <- apply(secondVarLogOdds,1,exp) 
+hist(secondVarOdds, main=NULL) 
+abline(v=quantile(secondVarOdds,probs=c(0.025,0.975)))
+```
+
+Comment on how the Bayesian (MCMC) means of the coefficient parameters on the two predictors compare with the corresponding results from the conventional glm() analysis. Review the plot of the MCMC output. Do the trace plots indicate a successful MCMC run? Do the distributions of parameter estimates on the predictor overlap with zero? 
+
+**Add your explanation of the Bayesian model output here:**
+Yes, indead.
+No, it does not overlap zero.
+
+Share a version of this file with your comments on: https://codeshare.io/5eyDnr

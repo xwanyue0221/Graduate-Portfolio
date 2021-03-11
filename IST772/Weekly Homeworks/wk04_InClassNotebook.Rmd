@@ -1,0 +1,95 @@
+---
+title: "Week 4 In Class Exercise Code"
+output: html_notebook
+---
+
+This is the analysis for the introductory slide. Use the Run menu to run individual chunks or the whole file. Or you can copy and paste the code to conduct your own experiments in another source code file.
+
+```{r}
+# Analysis for introductory slide
+sampSize <- 100 # Set sample size
+set.seed(11) # Control randomization
+
+groupA <- rnorm(n=sampSize/2) # Generate one sample
+groupB <- rnorm(n=sampSize/2) + 0.2 # Generate a second sample that has an effect of 0.2
+tout <- t.test(groupA, groupB) # Run a t-test
+tout$conf.int[1:2] # Report just the CI for showing to the class
+
+```
+
+Here's the setup for analyzing the battery sample. Note that the csv file has to be in the same directory as this file:
+
+```{r}
+library(readr)
+battData <- read_csv("bBatterydata.csv")
+str(battData)
+summary(battData)
+```
+
+Examine the histograms of the two subsamples.
+
+```{r}
+hist(battData$Time[battData$Battery==1])
+hist(battData$Time[battData$Battery==2])
+```
+
+A boxplot can contrast the two groups.
+
+```{r}
+boxplot(Time ~ Battery, data=battData, ylim=c(min(battData$Time)-50,max(battData$Time)+50))
+
+```
+
+Calls to tapply() apply a function like mean() to subgroups defined by INDEX. 
+
+```{r}
+tapply(X=battData$Time,INDEX=battData$Battery,FUN=mean)
+tapply(X=battData$Time,INDEX=battData$Battery,FUN=sd)
+
+```
+
+This generates a confidence interval (among other things).
+
+```{r}
+t.test(Time ~ Battery, data=battData)
+```
+
+Here's the beginning of the second exercise. Note that the csv file has to be in the same directlry as this file:
+
+```{r}
+library(readr)
+cBattPop <- read_csv("cBattPop.csv")
+
+popMeanDiff <- aggregate(Time ~ Battery, cBattPop, mean)[1,2] -
+  aggregate(Time ~ Battery, cBattPop, mean)[2,2]
+
+# Or. . .
+tapply(X=cBattPop$Time,INDEX=cBattPop$Battery,FUN=mean)[1] -
+  tapply(X=cBattPop$Time,INDEX=cBattPop$Battery,FUN=mean)[2]
+  
+
+
+```
+
+```{r}
+replBattCI <- function()
+{
+  mySamp <- cBattPop[sample(1:100000,size=172, replace=TRUE), ]
+  nicad <- mySamp$Time[mySamp$Battery==1]
+  liion <- mySamp$Time[mySamp$Battery==2]
+  return(t.test(nicad,liion)$conf.int)
+} 
+
+confIntList <- t(replicate(100,replBattCI()))
+```
+
+```{r}
+plot.ts(confIntList[,1],col="red", ylim=c(-45,-5), xlab="Replications", ylab="CIs Around Mean Diff")
+
+lines(confIntList[,2], col="green")
+
+abline(h=popMeanDiff)
+```
+
+
+Click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file. The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
