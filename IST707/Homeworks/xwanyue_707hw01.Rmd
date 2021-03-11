@@ -1,0 +1,518 @@
+---
+  title: "IST 707 Data Analytic: Homework 01"
+  author: "Wanyue Xiao"
+  date: "Feb 8th, 2020"
+  output: 
+    html_document: 
+      theme: cerulean
+---
+# Brief
+This homework will analyze the dataset which records employee's personal information. The purpose of this homework is to find all the posible features which might contribute to employee attribution via applying techniques of data visualization and Association Rules Model. Besides, a Shiny App will be created to present the [visualization result of Association Rule Model](https://xwanyue.shinyapps.io/hw01/).
+```{r}
+
+```
+## Data Importing
+Import dataset, convert data type, remove features with no or low variance, remove duplicate, checking and replacing null values, finding and replacing outliers.
+<br>
+Before analyzing the dataset, one should library all the necessary packages.
+```{r message=FALSE}
+library(dplyr)
+library(arules)
+library(knitr)
+library(caret)
+library(RANN)
+library(corrplot)
+library(rappdirs)
+library(arulesViz)
+library(ggplot2)
+library(plotly)
+library(plyr)
+library(tidyr)
+library(purrr)
+library(rsconnect)
+library(shiny)
+```
+<br>
+Importing the Dataset
+```{r results='hide'}
+my.dir <- getwd()
+employee_attrition <- read.csv(paste0(my.dir, "/","employee_attrition.csv"), header = TRUE, stringsAsFactors = FALSE)
+```
+<br>
+Checking the data structure.
+```{r}
+str(employee_attrition)
+```
+<br>
+```{r fig.width=8, fig.height= 12}
+summary(employee_attrition)
+```
+
+## Data Manipulation
+```{r}
+
+```
+**Features Management**
+<br>
+Removing features with no or low variances
+```{r}
+nzv <- nearZeroVar(employee_attrition, saveMetrics = T)
+employee_attrition <- employee_attrition[,c(-9,-22,-27)]
+```
+<br>
+**Duplicate Management**
+```{r}
+ifelse(nrow(employee_attrition) == nrow(employee_attrition[!duplicated(employee_attrition),]), 'The dataset does not have duplicate', 'The dataset has duplicate')
+```
+<br>
+**Missing values management**
+<br>
+Checking for missing value
+```{r}
+sum(!complete.cases(employee_attrition))
+```
+There are 9 missing values in the dataset.
+```{r fig.width=8, fig.height=4}
+row <- which(apply(employee_attrition, 1, function(x) sum(is.na(x))) > 0)
+col <- which(apply(employee_attrition, 2, function(x) sum(is.na(x))) > 0)
+print(as.data.frame(unique(employee_attrition[row,col])))
+```
+Replacing the missing value<br>
+Given that the processes of replacement are identical, only one of these processes will be displaced as an exmaple.
+```{r results='hide'}
+employee_attrition$DistanceFromHome[is.na(employee_attrition$DistanceFromHome)] <- round(mean(employee_attrition$DistanceFromHome, na.rm = T))
+```
+```{r echo=FALSE}
+employee_attrition$JobLevel[is.na(employee_attrition$JobLevel)] <- round(mean(employee_attrition$JobLevel, na.rm = T))
+employee_attrition$PercentSalaryHike[is.na(employee_attrition$PercentSalaryHike)] <- round(mean(employee_attrition$PercentSalaryHike, na.rm = T))
+employee_attrition$PerformanceRating[is.na(employee_attrition$PerformanceRating)] <- round(mean(employee_attrition$PerformanceRating, na.rm = T))
+employee_attrition$RelationshipSatisfaction[is.na(employee_attrition$RelationshipSatisfaction)] <- round(mean(employee_attrition$RelationshipSatisfaction, na.rm = T))
+employee_attrition$TotalWorkingYears[is.na(employee_attrition$TotalWorkingYears)] <- round(mean(employee_attrition$TotalWorkingYears, na.rm = T))
+employee_attrition$YearsSinceLastPromotion[is.na(employee_attrition$YearsSinceLastPromotion)] <- round(mean(employee_attrition$YearsSinceLastPromotion, na.rm = T))
+```
+Except "NA" values, there are also two empty values. Hence, one should find and eliminate these empty value
+```{r results='hide'}
+which(apply(employee_attrition, 1, function(x) sum(x == "")) > 0)
+which(apply(employee_attrition, 2, function(x) sum(x == "")) > 0)
+employee_attrition <- employee_attrition[c(-1013,-1062),]
+```
+<br>
+**Outlier Management**
+<br>
+In this process, the mean value of the column will be calculated and rounded. Next, these missing values will be raplced by corresponding mean value.
+<br>
+Before managing outliers, one should convert all the interger data to numeric data and then visualize all the numeric columns to find columns with outliers.
+```{r}
+num_var <- sapply(employee_attrition, is.integer) 
+employee_attrition[, num_var] <- lapply(employee_attrition[, num_var], as.numeric)
+
+char_var <- sapply(employee_attrition, is.character) 
+employee_attrition[, char_var] <- lapply(employee_attrition[, char_var], as.factor)
+```
+
+```{r fig.width=10, fig.height=15}
+employee_attrition %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(y = value, fill = "orange")) +
+  facet_wrap(~key, scales = "free") +
+  geom_boxplot() +
+  labs(title = "The Boxplots of Numeric Columns")
+```
+<br>
+For this graph, one can conclude the columns with outliers:
+<br>
+* DistanceFrom Home<br> * MonthlyIncome<br> * ... <br>
+* YearsWithCurrManager
+<br>
+<br>
+Even though there are several columns with outliers, only three of them will be managed. The reason is that some outliers are plausible to exist in real world. For example, the maximun of "YearsAtCompany" (which is 40) has been recognized as outlier. However, this number is highly possible to exist. <br>
+For some extreme values which are ten times than the rest of the data, such as the maximun value of "DistanceFromHome", these numbers do not make sense at all. Hence these outliers should be replaced.
+```{r results='hide'}
+employee_attrition$DistanceFromHome[employee_attrition$DistanceFromHome 
+                                    %in% boxplot.stats(employee_attrition$DistanceFromHome)$out] <- round(median(employee_attrition$DistanceFromHome, na.rm = T))
+employee_attrition$TotalWorkingYears[employee_attrition$TotalWorkingYears 
+                                     %in% boxplot.stats(employee_attrition$TotalWorkingYears)$out] <- round(median(employee_attrition$TotalWorkingYears, na.rm = T))
+employee_attrition$YearsWithCurrManager[employee_attrition$YearsWithCurrManager 
+                                        %in% boxplot.stats(employee_attrition$YearsWithCurrManager)$out] <- round(median(employee_attrition$YearsWithCurrManager, na.rm = T))
+```
+<br>
+**Data Type Conversion**
+<br>
+In this section, in order to analyze the dataset more efficiently. Numeric data will be converted to Factor data via discretization techniques.
+<br>
+Given that all these processes are repetitive, only four conversion processes will be shown here.
+```{r results='hide'}
+employee_attrition$Age_Group <- arules::discretize(employee_attrition$Age, method = "frequency", breaks = 3, labels = c("young", "mid", "elder"))
+employee_attrition$DRate_Group <- arules::discretize(employee_attrition$DailyRate, method = "frequency", breaks = 3, labels = c("low", "medium", "high"))
+employee_attrition$DistanceFromHome_Group <- arules::discretize(employee_attrition$DistanceFromHome, method = "frequency", breaks = 3, labels = c("short", "medium", "long"))
+employee_attrition$Education_Group <- as.factor(employee_attrition$Education)
+```
+```{r echo=FALSE}
+employee_attrition$EmployeeNumber_Group <- arules::discretize(employee_attrition$EmployeeNumber, method = "frequency", breaks = 3, labels = c("low", "medium", "high"))
+employee_attrition$EnvironmentSat_Group <- arules::discretize(employee_attrition$EnvironmentSatisfaction, method = "frequency", breaks = 2, labels = c("unsatisfactory", "satisfactory"))
+employee_attrition$HourlyRate_Group <- arules::discretize(employee_attrition$HourlyRate, method = "frequency", breaks = 3, labels = c("low", "medium","high"))
+employee_attrition$JobInvolvement_Group <- as.factor(employee_attrition$JobInvolvement)
+employee_attrition$JobLevel_Group <- as.factor(employee_attrition$JobLevel)
+employee_attrition$JobSatisfaction_Group <- arules::discretize(employee_attrition$JobSatisfaction, method = "frequency", breaks = 2, labels = c("unsatisfactory", "satisfactory"))
+employee_attrition$MonthlyIncome_Group <- arules::discretize(employee_attrition$MonthlyIncome, method = "frequency", breaks = 3, labels = c("low", "medium", "high"))
+employee_attrition$MonthlyRate_Group <- arules::discretize(employee_attrition$MonthlyRate, method = "frequency", breaks = 3, labels = c("low", "medium", "high"))
+employee_attrition$NumCompaniesWorked_Group <- arules::discretize(employee_attrition$NumCompaniesWorked, method = "frequency", breaks = 3, labels = c("small", "medium", "large"))
+employee_attrition$PercentSalaryHike_Group <- arules::discretize(employee_attrition$PercentSalaryHike, method = "frequency", breaks = 4)
+employee_attrition$PerformanceRating_Group <- as.factor(employee_attrition$PerformanceRating)
+employee_attrition$RelationshipSatisfaction_Group <- as.factor(employee_attrition$RelationshipSatisfaction)
+employee_attrition$StockOptionLevel_Group <- as.factor(employee_attrition$StockOptionLevel)
+employee_attrition$TotalWorkingYears_Group <- arules::discretize(employee_attrition$TotalWorkingYears, method = "frequency", breaks = 4)
+employee_attrition$TrainingTimesLastYear_Group <- arules::discretize(employee_attrition$TrainingTimesLastYear, method = "frequency", breaks = 3)
+employee_attrition$WorkLifeBalance_Group <- as.factor(employee_attrition$WorkLifeBalance)
+employee_attrition$YearsAtCompany_Group <- arules::discretize(employee_attrition$YearsAtCompany, method = "frequency", breaks = 4)
+employee_attrition$YearsInCurrentRole_Group <- arules::discretize(employee_attrition$YearsInCurrentRole, method = "frequency", breaks = 4)
+employee_attrition$YearsSinceLastPromotion_Group <- arules::discretize(employee_attrition$YearsSinceLastPromotion, method = "frequency", breaks = 2)
+employee_attrition$YearsWithCurrManager_Group <- arules::discretize(employee_attrition$YearsWithCurrManager, method = "frequency", breaks = 4)
+```
+<br>
+**Final Presentation of Dataset**
+<br>
+Checking for Details of the Dataset and save the dataset to local directory.
+```{r}
+employee_factors <- employee_attrition[, sapply(employee_attrition, is.factor)]
+str(employee_factors)
+write.csv(employee_factors,'employee_factors.csv')
+```
+
+```{r}
+
+```
+# Data Visualization
+Conduct exploratory data analysis (EDA): derive descriptive statistics and apply data visualization to check for interesting data patterns.<br>
+```{r}
+
+```
+### Descriptive Statistics Analysis
+Based on Attrition (Yes and No), calculate the mean value of each numeric columns and compare the results of different groups.
+```{r fig.width=8, fig.height= 4}
+Yes <- as.data.frame(employee_attrition %>% 
+  group_by(Attrition) %>% 
+  filter(Attrition=='Yes') %>%
+  summarise(m_Age = mean(Age),
+            m_Drate = mean(DailyRate), 
+            m_Distance = mean(DistanceFromHome), 
+            m_Edu = mean(Education),
+            m_Envir_Sat = mean(EnvironmentSatisfaction),
+            m_JobEnvolve = mean(JobInvolvement),
+            m_JobLevel = mean(JobLevel),
+            m_JobSatis = mean(JobSatisfaction),
+            m_PerfRate = mean(PerformanceRating),
+            m_StockOption = mean(StockOptionLevel),
+            m_RelationSat = mean(RelationshipSatisfaction),
+            m_NumberCompanyWork = mean(NumCompaniesWorked),
+            m_TotalWorkYear = mean(TotalWorkingYears),
+            m_Worklife_Balance = mean(WorkLifeBalance),
+            m_TrainTime_LastYear = mean(TrainingTimesLastYear),
+            m_Work_Company = mean(YearsAtCompany),
+            m_CurrentPos_Year = mean(YearsInCurrentRole),
+            m_Promotion_Year = mean(YearsSinceLastPromotion),
+            m_CurrentManager_Year = mean(YearsWithCurrManager)))
+```
+```{r echo=FALSE}
+No <- as.data.frame(employee_attrition %>% 
+  group_by(Attrition) %>% 
+  filter(Attrition=='No') %>%
+  summarise(m_Age = mean(Age),
+            m_Drate = mean(DailyRate), 
+            m_Distance = mean(DistanceFromHome), 
+            m_Edu = mean(Education),
+            m_Envir_Sat = mean(EnvironmentSatisfaction),
+            m_JobEnvolve = mean(JobInvolvement),
+            m_JobLevel = mean(JobLevel),
+            m_JobSatis = mean(JobSatisfaction),
+            m_PerfRate = mean(PerformanceRating),
+            m_StockOption = mean(StockOptionLevel),
+            m_RelationSat = mean(RelationshipSatisfaction),
+            m_NumberCompanyWork = mean(NumCompaniesWorked),
+            m_TotalWorkYear = mean(TotalWorkingYears),
+            m_Worklife_Balance = mean(WorkLifeBalance),
+            m_TrainTime_LastYear = mean(TrainingTimesLastYear),
+            m_Work_Company = mean(YearsAtCompany),
+            m_CurrentPos_Year = mean(YearsInCurrentRole),
+            m_Promotion_Year = mean(YearsSinceLastPromotion),
+            m_CurrentManager_Year = mean(YearsWithCurrManager)))
+
+df <- No-Yes
+df
+
+```
+<br>
+After comparing the results, one should eliminate the columns which have little difference.
+```{r}
+employee_attrition %>% 
+  group_by(Attrition) %>% 
+  summarise(m_Age = mean(Age), 
+            m_Drate = mean(DailyRate), 
+            m_Distance = mean(DistanceFromHome), 
+            m_Joblevel = mean(JobLevel),
+            m_Total_work_year = mean(TotalWorkingYears),
+            m_Year_at_Company = mean(YearsAtCompany),
+            m_Year_current_position = mean(YearsInCurrentRole),
+            m_Year_promotion = mean(YearsSinceLastPromotion),
+            m_Year_current_manager = mean(YearsWithCurrManager))
+```
+
+```{r}
+
+```
+### Correlation Plot
+```{r fig.width=8, fig.height=8}
+cor_matrix <- cor(employee_attrition[complete.cases(employee_attrition), sapply(employee_attrition, is.numeric)], method = "pearson")
+corrplot(cor_matrix,type = 'upper', tl.col = "black")
+```
+
+```{r}
+
+```
+### The Histograms of Numeric Variables
+```{r fig.width=8, fig.height=13}
+employee_attrition %>% keep(is.numeric) %>%
+  gather() %>%
+  ggplot(aes(x = value)) +
+  facet_wrap(~key, scales = "free") +
+  geom_histogram(bins = 15, fill = "lightblue", color = "white") +
+  labs(title = "The Histogram of Numeric Columns")
+```
+
+```{r}
+
+```
+### Specific Graphs of Each Numeric Variable
+**Barplt of Age Variable**
+<br>
+Summary: The mean of number of employees who tend to leave is lower than that of employees who tend not to leave. Besides, the distribution of "not to leave" group follows standard deviation model while that of "to leave" group is right-skewed, implying young employees show more willingness to leave the company.
+```{r}
+cdat <- ddply(employee_attrition, "Attrition", summarise, Age.mean = mean(Age))
+p<-ggplot(employee_attrition, aes(x = Age, fill = Attrition)) +
+  geom_histogram(binwidth = 3, alpha = .5, position = "identity")+
+  geom_vline(data = cdat, aes(xintercept = Age.mean),
+             linetype = "dashed", size = 1, color = c("pink", "lightblue"))
+p<-ggplotly(p)
+p
+```
+**Barplot of DailyRate Variable**
+<br>
+Summary: From thsi plot, one can only summarize that the mean of number of employees who tend to leave is lower than that of employees who tend not to leave. The distributions are randomly, implying that DailyRate might not have great influence to turnover rate.
+```{r}
+cdat <- ddply(employee_attrition, "Attrition", summarise, DailyRate.mean = mean(DailyRate))
+p<-ggplot(employee_attrition, aes(x = DailyRate, fill = Attrition)) +
+  geom_histogram(binwidth = 100, alpha = .5, position = "identity")+
+  geom_vline(data = cdat, aes(xintercept = DailyRate.mean),
+             linetype = "dashed", size = 1, color = c("pink", "lightblue"))
+p<-ggplotly(p)
+p
+```
+**Barplot of DistanceFromHowe Variable**
+<br>
+Generally, the distance from home has little influence to the turnover rate, except for those who live far enough.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("DistanceFromHome_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = DistanceFromHome_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge())
+p<-ggplotly(p)
+p
+```
+**Barplot  of JobLevel Variable**
+<br>
+The turnover rate tends to declines significantly for employees in job with higher level.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("JobLevel_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = JobLevel_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge())
+p<-ggplotly(p)
+p
+```
+**Barplot of Total Work Year Variable**
+<br>
+Summary: The turnover rate tends to decrease for employees who have more working experience (years).
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("TotalWorkingYears_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = TotalWorkingYears_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge()) +
+  geom_hline(yintercept = mean(employee_attrition$TotalWorkingYears[employee_attrition$Attrition == 'Yes']), col = "lightblue") +
+  geom_hline(yintercept = mean(employee_attrition$TotalWorkingYears[employee_attrition$Attrition == 'No']), col = "pink")
+p<-ggplotly(p)
+p
+```
+**Barplot of Year at Company Variable**
+<br>
+Summary: Generally, the turnover rate tends to decrease for employees who spend more time in this company.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("YearsAtCompany_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = YearsAtCompany_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge()) +
+  geom_hline(yintercept = mean(employee_attrition$YearsAtCompany[employee_attrition$Attrition == 'Yes']), col = "lightblue") +
+  geom_hline(yintercept = mean(employee_attrition$YearsAtCompany[employee_attrition$Attrition == 'No']), col = "pink")
+p<-ggplotly(p)
+p
+```
+**Barplt of Year in Current Position Variable**
+<br>
+Summary: The turnover rate tends to decrease for employees who spend more time in current position. However, for group range from 7 to 18, the turnover rate increases sightly.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("YearsInCurrentRole_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = YearsInCurrentRole_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge()) +
+  geom_hline(yintercept = mean(employee_attrition$YearsInCurrentRole[employee_attrition$Attrition == 'Yes']), col = "lightblue") +
+  geom_hline(yintercept = mean(employee_attrition$YearsInCurrentRole[employee_attrition$Attrition == 'No']), col = "pink")
+p<-ggplotly(p)
+p
+```
+**Barplt of Year since Last Promotion**
+<br>
+Summary: YearSinceLastPromotion has little influence to the turnover rate.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("YearsSinceLastPromotion_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = YearsSinceLastPromotion_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge()) +
+  geom_hline(yintercept = mean(employee_attrition$YearsSinceLastPromotion[employee_attrition$Attrition == 'Yes']), col = "lightblue") +
+  geom_hline(yintercept = mean(employee_attrition$YearsSinceLastPromotion[employee_attrition$Attrition == 'No']), col = "pink")
+p<-ggplotly(p)
+p
+```
+**Barplt of Year with Current Manager**
+<br>
+Summary: The turnover rate tends to decrease for employees who spend more time with current manager.
+```{r}
+cdat <- as.data.frame(ddply(employee_attrition, c("YearsWithCurrManager_Group", "Attrition"), summarise, Attrition.Number = length(Attrition)))
+p<-ggplot(cdat, aes(x = YearsWithCurrManager_Group, y = Attrition.Number, fill = Attrition)) +
+  geom_bar(alpha = .5, stat = "identity", position = position_dodge()) +
+  geom_hline(yintercept = mean(employee_attrition$YearsWithCurrManager[employee_attrition$Attrition == 'Yes']), col = "lightblue") +
+  geom_hline(yintercept = mean(employee_attrition$YearsWithCurrManager[employee_attrition$Attrition == 'No']), col = "pink")
+p<-ggplotly(p)
+p
+```
+
+```{r}
+
+```
+<br>
+```{r}
+
+```
+# Association Rules Model
+```{r}
+
+```
+### Baseline Model
+Utilizing asscoiation rules to create a **baseline model** (setting all the hyper-paramter to default value)
+```{r results='hide'}
+factor_trans <- as(employee_factors[, sapply(employee_factors, is.factor)], "transactions")
+baseline <- apriori(factor_trans)
+```
+Result of Baseline Model
+```{r}
+inspect(head(sort(baseline, by = "lift", decreasing = T), 5))
+```
+Visualize the Baseline Model: **Top 10 Item Frequency Plot**
+```{r}
+itemFrequencyPlot(factor_trans, topN = 10, type = "absolute", main = "Item Frequency")
+plot(baseline, jitter = 0)
+```
+<br>
+**Summary and Analysis:**<br>
+One can conclude that with decrease in support, both the values of confidence and lift will increase.
+```{r}
+
+```
+### For group with Attribution = Yes
+Setting the support to 0.01 implicates that the combination of rules should at least appears twise in the transaction set.<br>
+Setting the confidence to 0.8 implicates that the relationship between lhs and rhs are strong enough to support their correlation.<br>
+Besides, using as.subset() function can help the programmer to prune redundant transaction rules.
+```{r results='hide'}
+rules_yes <- apriori(factor_trans, 
+                 parameter = list(support = 0.01, confidence = 0.8, minlen = 3),
+                 appearance = list(default = "lhs", rhs = c("Attrition=Yes")), 
+                 control = list(verbose = F))
+subset_rules <- which(colSums(is.subset(rules_yes, rules_yes)) > 1)
+rules_yes <- rules_yes[-subset_rules]
+result_yes <- head(sort(rules_yes, by = "lift", decreasing = T), 10)
+```
+Checking the Top 5 rules
+```{r}
+inspect(head(sort(rules_yes, by = "lift", decreasing = T), 5))
+```
+Visualize those rules
+```{r}
+plot(result_yes, method = "paracoord", control = list(reorder = T))
+plot(rules_yes, measure = c("support", "lift"), shading = "confidence")
+```
+
+```{r fig.width=8,fig.height=8}
+plot(result_yes, method = "graph")
+```
+
+```{r}
+
+```
+### For group with Attribution = No
+Setting the support to 0.1 implicates that the combination of rules should at least appears 50 times in the transaction set.<br>
+Setting the confidence to 0.9 implicates that the relationship between lhs and rhs are strong enough to support their correlation.<br>
+Besides, using as.subset() function can help the programmer to prune redundant transaction rules.
+```{r results='hide'}
+rules_no <- apriori(factor_trans, 
+                 parameter = list(support = 0.1, confidence = 0.90, minlen = 4),
+                 appearance = list(default = "lhs", rhs = c("Attrition=No")), 
+                 control = list(verbose = F))
+subset_rules <- which(colSums(is.subset(rules_no, rules_no)) > 1)
+rules_no <- rules_no[-subset_rules]
+result_no <- head(sort(rules_no, by = "lift", decreasing = T), 15)
+```
+The Top 5 rules
+```{r}
+inspect(head(sort(rules_no, by = "lift", decreasing = T), 5))
+```
+Visualize the rules
+```{r}
+plot(result_no, method = "paracoord", control = list(reorder = T))
+plot(rules_no, measure = c("support", "lift"), shading = "confidence")
+```
+Visualize the rules
+```{r fig.width=8,fig.height=8}
+plot(result_no, method = "graph")
+```
+
+## Analysis Report
+```{r}
+
+```
+For **Association Rules Model:**<br>
+One should run the models several times with different hyper-parameters in order to optimize the results. Even though it seems that the higher the values of support and confidence, the better the result will be, the selection will alter with the purposes of programmer. Besides, one should avoid to set a extrem value (such as setting support to 1.0), which might cause overfitting problem. 
+<br>
+<br>
+
+According to the analysis illustrated above, there are several factors contributes to **"Attribution=Yes"** attribute:
+* BusinessTravel = Travel_Frequently<br>
+* Age_Group = Young<br>
+* JobLevel_Group = 1<br>
+* OverTime = Yes<br>
+* JobSatisfaction_Goup = Unsatisfactory<br>
+* YearAtCompany_Group = [0,3) <br>
+* StockOptionLevel_Group = 0
+<br><br>
+Hence, one can summarise that those new-enrolled, young employees who travel frequently and work overtime frquently tend to level the company, especially in cases that they feel unsatisfactory about their works and have limited option for stock.
+<br><br>
+For **"Attribution=No"** group, the significant factors are:
+* OverTime = No<br>
+* JobSatisfaction_Goup = Satisfactory <br>
+* YearAtCompany_Group = [5,9) <br>
+* StockOptionLevel_Group = 1
+<br><br>
+Hence, employees who do not work overtime and satisfy their job tend not to level the company, especially for those who have option for stock and work in this company above 5 years.
+
+<br>
+**Recommendation**<br>
+In this situation, the manager can investigate features that bring negative influence to employees and then launch some activities to reduce the turnover rate. For example, manager can take inititive to reducev the overtime rate, especially for young employees.
+
+<br>
+**Finally**<br>
+This is the end of this presentation. If you want to find more interesting data paterns. You can click the link below to talor your own Association Rule Model. Hope you enjoy it!<br>
+**Shiny App**
+[web link](https://xwanyue.shinyapps.io/hw01/)
+<br>
+**Reminder:** Please be patient about the fleshing speed of this App.
