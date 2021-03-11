@@ -47,9 +47,11 @@ D) **IST 736**: [736](./IST769/xwanyue_whitpaper_Neo4j.pdf)
 <br>
 The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
 <br>
-
-Created: Wanyue Xiao
-SUID: 720633297
-Academic Email: xwanyue@syr.edu
-Program: M.S. in Applied Data Science
-LinkedIn Website: www.linkedin.com/in/wanyue-xiao-60688196
+<br>
+### Author Information ###
+<br>
+- **Created:** Wanyue Xiao<br>
+- **SUID:** 720633297<br>
+- **Academic Email:** xwanyue@syr.edu<br>
+- **Program:** M.S. in Applied Data Science<br>
+- **LinkedIn Website:** www.linkedin.com/in/wanyue-xiao-60688196
