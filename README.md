@@ -12,8 +12,6 @@ The resume is updated on March 2021.
 A) **IST 719**: [Video Game Analysis](./IST719/719_game_poster.pdf) & [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) 
 <br>
 The deliverables of IST719 Information Visualization are a poster and an advanced topic presentation. For the poster design, I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen "Information Visualization in Kaggle" as a topic and shot a short video with professional slides. 
-
-[![./IST719/719_game_poster.pdf](Video Game Analysis Poster)(./IST719/719_game_poster.pdf)]
 <br>
 B) **IST 769**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
