@@ -9,9 +9,12 @@ A paper summarises knowledge and techqniues learned in the master's program.
 The resume is updated on March 2021.
 
 ## 3. Academic Projects
-A) **IST 719**: [Video Game Analysis](./IST719/719_game_poster.pdf) & [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) 
+A) **IST 719**:
 <br>
-The deliverables of IST719 Information Visualization are a poster and an advanced topic presentation. For the poster design, I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen "Information Visualization in Kaggle" as a topic and shot a short video with professional slides. 
+The deliverables of IST719 Information Visualization are a poster and an advanced topic presentation. For the poster design, which is the [Video Game Analysis](./IST719/719_game_poster.pdf), I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) as a topic and shot a short video with professional slides. 
+<br>
+**Poster:** <br>
+![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)
 <br>
 B) **IST 769**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
@@ -21,10 +24,6 @@ C) **IST 664**: [Detection of Personal Experiences or Storytelling](./IST 664/Fi
 <br>
 IST664 Natural Language Processing is designed to help students develop techniques of unstructured text processing, including understanfong of concepts regarding text analysis and ability to generate linguistic analytic report. The couresworks 
 
-
- Readings, lectures, and class discussions of the multiple levels of linguistic analysis required for a computer to accept natural language input, interpret it, and carry out a particular application;
- Lab exercises and assignments in using some computational techniques required to perform these levels of natural language processing of text, and,
- Studies of real world applications that incorporate substantive NLP modules.
 <br>
 D) **IST 700**: [700](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
