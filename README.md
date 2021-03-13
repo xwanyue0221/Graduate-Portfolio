@@ -1,11 +1,9 @@
 # MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021
-This is the demonstration of Wanyue Xiao, a graduate student whose major is Applied Data Science in Syracuse University.
-
-This repository is the Graduation Portfolio Milestone for my master's degree of Applied Data Science at Syracuse University. It will showcase the academic projects I did in the previous coursework and my knowledge about data science and machine learning.
+This repository is a Graduation Portfolio Collection containing project coursework and assignments completed during the master's degree of Applied Data Science at Syracuse University, including field knowledge of data science, data analysis, and machine learning.
 
 ## 1. Paper: How I Would Learn Data Science
 Paper-link
-This paper is basically a summary of what I have learned during the 2 years in the master's program of Applied Data Science - the knowledge and critical thinkings regarding data science, and the technical skills that are required to succeed in this field.
+A paper summarises knowledge and techqniues learned in the master's program.
 
 ## 2. [Professional Resume](./wanyuex.pdf)
 The resume is updated on March 2021.
@@ -14,14 +12,21 @@ The resume is updated on March 2021.
 A) **IST 719**: [Video Game Analysis](./IST719/719_game_poster.pdf) & [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) 
 <br>
 The deliverables of IST719 Information Visualization are a poster and an advanced topic presentation. For the poster design, I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen "Information Visualization in Kaggle" as a topic and shot a short video with professional slides. 
+
+[![./IST719/719_game_poster.pdf](Video Game Analysis Poster)(./IST719/719_game_poster.pdf)]
 <br>
 B) **IST 769**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
 The final project of IST769 Advanced Big Data Management is to select a database related topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
 <br>
-C) **IST 664**: [Graph Database Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
+C) **IST 664**: [Detection of Personal Experiences or Storytelling](./IST 664/Final Project/NLP Final Project Report.docx) & [Deep Learning for Chinese Word Segmentation and POS Tagging](./IST 664/Final Project/664_poster.pdf) 
 <br>
-The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. 
+IST664 Natural Language Processing is designed to help students develop techniques of unstructured text processing, including understanfong of concepts regarding text analysis and ability to generate linguistic analytic report. The couresworks 
+
+
+ Readings, lectures, and class discussions of the multiple levels of linguistic analysis required for a computer to accept natural language input, interpret it, and carry out a particular application;
+ Lab exercises and assignments in using some computational techniques required to perform these levels of natural language processing of text, and,
+ Studies of real world applications that incorporate substantive NLP modules.
 <br>
 D) **IST 700**: [700](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
