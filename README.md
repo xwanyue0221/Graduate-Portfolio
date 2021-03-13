@@ -1,5 +1,12 @@
 # MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021
-This repository is a Graduation Portfolio Collection containing project coursework and assignments completed during the master's degree of Applied Data Science at Syracuse University, including field knowledge of data science, data analysis, and machine learning.
+This repository is a Graduation Portfolio Collection containing project coursework and assignments completed during the master's degree of Applied Data Science at Syracuse University, including field knowledge of data science, data analysis, and machine learning.<br>
+<br>
+**Author Information**<br>
+- **Created:** Wanyue Xiao<br>
+- **SUID:** 720633297<br>
+- **Academic Email:** xwanyue@syr.edu<br>
+- **Program:** M.S. in Applied Data Science<br>
+- **LinkedIn Website:** www.linkedin.com/in/wanyue-xiao-60688196
 
 ## 1. Paper: How I Would Learn Data Science
 Paper-link
@@ -43,12 +50,3 @@ The final project of IST664 Natural Language Processing is to select a topic and
 D) **IST 736**: [736](./IST769/xwanyue_whitpaper_Neo4j.pdf) 
 <br>
 The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j.<br>
-<br>
-
-<br>
-## 4. Author Information
-- **Created:** Wanyue Xiao<br>
-- **SUID:** 720633297<br>
-- **Academic Email:** xwanyue@syr.edu<br>
-- **Program:** M.S. in Applied Data Science<br>
-- **LinkedIn Website:** www.linkedin.com/in/wanyue-xiao-60688196
