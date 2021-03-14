@@ -37,18 +37,18 @@ IST664 is designed to help students develop techniques of unstructured text proc
 
 D) **IST 700**: Deep Learning, NLP, and Computational Social Science <br>
 Covered Skills: Principles of data mining methods, including Algorithmic Bias, Model Evaluation Beyond Accuracy, Corpus Annotation, and theories of text mining, including BERT in sklearn and Word embedding (word2vec and GloVe) <br>
-The course of IST700 aims to introduce prevalent data mining methods for extracting knowledge from data. For the final project, our group generated a [COVID-19 Public Sentiment Analysis](./IST700/Final Project/700_final_project.pdf) paper to capture popular topics and associated sentiment dynamics based on the massive social media posts on Twitter.<br>
+The course of IST700 aims to introduce prevalent data mining methods for extracting knowledge from data. For the final project, our group generated a [COVID-19 Public Sentiment Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/700_final_project.pdf) paper to capture popular topics and associated sentiment dynamics based on the massive social media posts on Twitter.<br>
 <br>
 E) **IST 707**: Data Analytics <br>
 Covered Skills: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) <br>
-IST 707 covers various data mining methods for data analysis, ranging from . As a code intensive course, IST707 requires student to obtain hands-on experience tby solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression and several Classification approaches, such as Decision Tree, Support V ector Machine (SVM), K Nearest Neighbor (KNN) etc. to analyze the [U.S. Car Accidents dataset](./IST707/Final Project/IST707 Final Project Report.pdf). <br>
+IST 707 covers various data mining methods for data analysis, ranging from . As a code intensive course, IST707 requires student to obtain hands-on experience tby solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression and several Classification approaches, such as Decision Tree, Support V ector Machine (SVM), K Nearest Neighbor (KNN) etc. to analyze the [U.S. Car Accidents dataset](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf). <br>
 **Poster:** <br>
 ![U.S. Car Accidents Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/Final_Project_Poster_Team.png)<br>
 <br>
 F) **IST 718**: Big Data Analytics <br>
 Covered Skills: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning <br>
-IST 718 instruct students how to utilize techniques of big data analysis to gain actionable insights, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](./IST718/Final Project/project_report.docx). <br>
+IST 718 instruct students how to utilize techniques of big data analysis to gain actionable insights, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). <br>
 <br>
 G) **IST 736**: Text Analysis <br>
 Covered Skills: Text Representation, Word Vectorization, Lexicon-based Text Analysis, Clustering Analysis, Topic Modeling, Naive Bayes Algorithm <br>
-The final project of IST664 Natural Language Processing is to select a topic and provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j.<br>
+IST 736 introduces concepts and methods for knowledge discovery from large amount of text data, and the application of text mining techniques for business intelligence, digital humanities, and social behavior analysis.<br>
