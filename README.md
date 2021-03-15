@@ -38,7 +38,7 @@ C) **IST 718**: Big Data Analytics <br>
 Density plot of Tenure, Monthly Charges, and Total Charges by Churn:<br>
 ![Density plot of Tenure, Monthly Charges, and Total Charges by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Density%20plot%20of%20Tenure%2C%20Monthly%20Charges%2C%20and%20Total%20Charges%20by%20Churn.png)<br>
 Bar plot of TechSupport, Contract, PaymentMethod, and OnlineBackup by Churn:<br>
-![Bar plot of TechSupport, Contract, PaymentMethod, and OnlineBackup by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Bar%20plot%20of%20TechSupport%2C%20Contract%2C%20PaymentMethod%2C%20and%20OnlineBackup%20by%20Churn.png)<br>
+![Bar plot of TechSupport, Contract, PaymentMethod, and OnlineBackup by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Unknown.png)<br>
 Evaluation and Comparison of Random Forest, Gradient Boosting Tree, Logistic Regression, and Linear Support Vector Machine Models:<br>
 ![Evaluation and Comparison of Random Forest, Gradient Boosting Tree, Logistic Regression, and Linear Support Vector Machine Models](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Evaluation%20and%20Comparison%20of%20Random%20Forest%2C%20Gradient%20Boosting%20Tree%2C%20Logistic%20Regression%2C%20and%20Linear%20Support%20Vector%20Machine%20Models.png)<br>
 <br>
