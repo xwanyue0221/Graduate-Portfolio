@@ -6,9 +6,9 @@ Our group used Association Rule Mining, Logistic Regression, and several Classif
 
 ## Files
 Final Project: <br>
+Homework: Weekly assignments <br>
 - 707_AI_ETHICS.pptx: slides of the individual advanced topic presentation, which is the AI Ethics<br>
 - Final_Project_Poster_Team_6.pdf: poster that includes essential contents of final project report <br>
 - IST707 Final Project Proposal.docx: project proposal <br>
 - IST707 Final Project Report.pdf: final report for this project<br>
 - Project_Ver.final.R: project code <br>
-Homeworks: weekly assignments
