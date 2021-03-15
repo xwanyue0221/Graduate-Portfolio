@@ -6,9 +6,9 @@ The final project is to create a poster for a self-chosen database, using R and 
 
 ## Files
 Final Project: <br>
+Homework: Weekly assignments <br>
 - 719_advanced_topic_ppt.pptx: slides of the individual advanced topic presentation, which is the Information Visualization in Kaggle <br>
 - 719_game_poster.pdf: poster that includes essential contents of final project report <br>
 - top15.publish.global.sales.csv: a document that was generated during the project, which is used to record the rop 15 publishers with the highest global sales <br>
 - xwanyue_719_wip_report.pdf: project proposal <br>
 - xwanyue_719_finalProject.R: project code <br>
-Homeworks: weekly assignments
