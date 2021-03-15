@@ -34,6 +34,13 @@ B) **IST 707**: Data Analytics <br>
 C) **IST 718**: Big Data Analytics <br>
 **Covered Skills**: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning <br>
 **Description**: IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). <br>
+**Project Plots:** <br>
+Density plot of Tenure, Monthly Charges, and Total Charges by Churn:<br>
+![Density plot of Tenure, Monthly Charges, and Total Charges by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Density%20plot%20of%20Tenure%2C%20Monthly%20Charges%2C%20and%20Total%20Charges%20by%20Churn.png)<br>
+Bar plot of TechSupport, Contract, PaymentMethod, and OnlineBackup by Churn:<br>
+![Bar plot of TechSupport, Contract, PaymentMethod, and OnlineBackup by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Bar%20plot%20of%20TechSupport%2C%20Contract%2C%20PaymentMethod%2C%20and%20OnlineBackup%20by%20Churn.png)<br>
+Evaluation and Comparison of Random Forest, Gradient Boosting Tree, Logistic Regression, and Linear Support Vector Machine Models:<br>
+![Evaluation and Comparison of Random Forest, Gradient Boosting Tree, Logistic Regression, and Linear Support Vector Machine Models](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Evaluation%20and%20Comparison%20of%20Random%20Forest%2C%20Gradient%20Boosting%20Tree%2C%20Logistic%20Regression%2C%20and%20Linear%20Support%20Vector%20Machine%20Models.png)<br>
 <br>
 
 ### Natural Language Processing
@@ -52,8 +59,8 @@ The Sentiment Analysis of the U.S.A. Tweets Comments During April:<br>
 ![The Sentiment Analysis of the U.S.A. Tweets Comments During April](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/rq1.jpg)<br>
 Themes (by %) concluded by 35 topics in California and New York, with the top associated words:<br>
 ![Themes (by %) concluded by 35 topics in California and New York, with the top associated words](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/barplot_topic_final.png)<br>
-Topic level Sentiment Changes:<br>
-![Topic level Sentiment Changes](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/rq3.png)<br>
+Topic Level Sentiment Changes:<br>
+![Topic Level Sentiment Changes](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/rq3.png)<br>
 <br>
 
 F) **IST 736**: Text Analysis <br>
@@ -63,7 +70,7 @@ F) **IST 736**: Text Analysis <br>
 ### Database Management
 G) **IST 659**: Data Administration Concepts and Database Management <br>
 **Covered Skills**: Definition, development, and management of databases for information systems, including data analysis techniques, data modeling, schema design, query languages, and search specifications. Overview of file organization for databases. Data administration concepts and skills <br>
-**Description**: IST 659 examines data structures, file organizations, concepts, and principles of database management systems (DBMS) as well as data analysis, database design, data modeling, database management, and database implementation. The final project is to create a comprehensive demonstration of database design, including modeling, design, query, user interface, and implementation. The project aims to design a database system for an online forum called [ToyPedia](./IST659/Project Implementation Report-1577476781000.pdf), which is an online forum equipping basic functionalities (such as posting and replying, user management, eCommerce system, stock management, order management, shipping management, staff management, and KPI indication. <br>
+**Description**: IST 659 examines data structures, file organizations, concepts, and principles of database management systems (DBMS) as well as data analysis, database design, data modeling, database management, and database implementation. The final project is to create a comprehensive demonstration of database design, including modeling, design, query, user interface, and implementation. The project aims to design a database system for an online forum called [Toypedia](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST659/Project%20Implementation%20Report-1577476781000.pdf), which is an online forum equipping basic functionalities (such as posting and replying, user management, eCommerce system, stock management, order management, shipping management, staff management, and KPI indication. <br>
 <br>
 
 H) **IST 769**: Advanced Big Data Management <br>
