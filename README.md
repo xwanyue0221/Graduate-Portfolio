@@ -38,6 +38,10 @@ IST664 is designed to help students develop techniques of unstructured text proc
 D) **IST 700**: Deep Learning, NLP, and Computational Social Science <br>
 Covered Skills: Principles of data mining methods, including Algorithmic Bias, Model Evaluation Beyond Accuracy, Corpus Annotation, and theories of text mining, including BERT in sklearn and Word embedding (word2vec and GloVe) <br>
 The course of IST700 aims to introduce prevalent data mining methods for extracting knowledge from data. For the final project, our group generated a [COVID-19 Public Sentiment Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/700_final_project.pdf) paper to capture popular topics and associated sentiment dynamics based on the massive social media posts on Twitter.<br>
+**Project Plots:** <br>
+![The Sentiment Analysis of the U.S.A. Tweets Comments During April](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/rq1.jpg)<br>
+![Themes (by %) concluded by 35 topics in California and New York, with the top associated words](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/barplot_topic_final.png)<br>
+![Topic level Sentiment Changes](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST700/Final%20Project/rq3.png<br>
 <br>
 E) **IST 707**: Data Analytics <br>
 Covered Skills: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) <br>
