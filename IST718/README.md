@@ -1,4 +1,4 @@
-# IST 707: Data Analytics 
+# IST 718: Big Data Analytics 
 IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights.
 
 ## Project Description
