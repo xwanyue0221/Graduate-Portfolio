@@ -1,15 +1,15 @@
 # MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021
-This repository is a Graduation Portfolio Collection containing project coursework and assignments completed during the master's degree of Applied Data Science at Syracuse University, including field knowledge of data science, data analysis, and machine learning.<br>
+This repository is a Graduation Portfolio Collection containing projects, courseworks, and assignments completed during the master's degree of Applied Data Science at Syracuse University, covering field knowledge of data science, data analysis, and machine learning.<br>
 <br>
 **Author Information**<br>
-- **Created:** Wanyue Xiao<br>
+- **Created by:** Wanyue Xiao<br>
 - **SUID:** 720633297<br>
 - **Academic Email:** xwanyue@syr.edu<br>
 - **Program:** M.S. in Applied Data Science<br>
 - **LinkedIn Website:** www.linkedin.com/in/wanyue-xiao-60688196
 
 ## 1. Paper: How I Would Learn Data Science
-Paper-link
+Paper-link <br>
 A paper summarises knowledge and techniques learned in the master's program.
 
 ## 2. Professional Resume
