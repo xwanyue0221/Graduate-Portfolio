@@ -10,7 +10,7 @@ This repository is a Graduation Portfolio Collection containing project coursewo
 
 ## 1. Paper: How I Would Learn Data Science
 Paper-link
-A paper summarises knowledge and techqniues learned in the master's program.
+A paper summarises knowledge and techniques learned in the master's program.
 
 ## 2. Professional Resume
 The [resume](./wanyuex.pdf) is updated on March 2021.
@@ -25,12 +25,12 @@ A) **IST 719**: Information Visualization <br>
 
 B) **IST 769**: Advanced Big Data Management <br>
 **Covered Skills**: Relational SQL (Programming, Transactions, Concurrency Control, Performance, Security), Hadoop Ecosystems (HDFS, MapReduce, Hive, Hbase, Impala, etc), noSQL (MongoDB, Redis, Cassandra, Kakfa, KSQL, Graph Databases), Data Modeling & Design <br>
-**Description**: IST769's study objectives include the analysis of relational and non-relational databases and their corresponding management system architectures, the analysis of data systems performance, scalability and security, and analysis of choosing different database in different scenarios. The final project of IST769 is to provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named [Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf). <br>
+**Description**: IST769's study objectives include the analysis of relational and non-relational databases and their corresponding management system architectures, the analysis of data systems performance, scalability, and security, and analysis of choosing different databases in different scenarios. The final project of IST769 is to provide a detailed and professional presentation based on the chosen topic. The final project of IST769 is to provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named [Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf). <br>
 <br>
 
 C) **IST 664**: Natural Language Processing <br>
 **Covered Skills**: Statistical Parsing, Semantic Processing & Representation, Role Labeling, Discourse Analysis, Coreference Resolution, Deep NLP (Word Embedding, CNN) <br>
-**Description**: IST664 is designed to help students develop techniques of unstructured text processing, including concepts regarding text analysis and the ability to generate a linguistic analytic report. The coursework project was to establish models for [Detection of Personal Experience](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST%20664/Final%20Project/NLP%20Final%20Project%20Report.docx) based on a database annotated by Professor Lu Xiao and her research team. Besides, our group also researched the aspect of [Deep Learning for Chinese Word Segmentation and POS Tagging](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST%20664/Final%20Project/664_poster.pdf). <br>
+**Description**: IST664 is designed to help students develop techniques of unstructured text processing, including concepts regarding text analysis and the ability to generate a linguistic analytic report. The coursework project was to establish models for [Detection of Personal Experience](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST%20664/Final%20Project/NLP%20Final%20Project%20Report.docx) based on a database annotated by Professor Lu Xiao and her research team. Besides, our group also did research and made a presentation of [Deep Learning for Chinese Word Segmentation and POS Tagging](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST%20664/Final%20Project/664_poster.pdf). <br>
 **Poster:** <br>
 ![Deep Learning for Chinese Word Segmentation and POS Tagging](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST%20664/Final%20Project/664_poster.png)<br>
 <br>
@@ -49,15 +49,15 @@ Topic level Sentiment Changes:<br>
 
 E) **IST 707**: Data Analytics <br>
 **Covered Skills**: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) <br>
-**Description**: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. As a code intensive course, IST707 requires student to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression and several Classification approaches, such as Decision Tree, Support V ector Machine (SVM), K Nearest Neighbor (KNN) etc. to analyze the [U.S. Car Accidents dataset](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf). <br>
+**Description**: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. As a code-intensive course, IST707 requires students to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression, and several Classification approaches, such as Decision Tree, Support Vector Machine (SVM), K Nearest Neighbor (KNN), etc. to analyze the [U.S. Car Accidents dataset](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf). <br>
 **Poster:** <br>
 ![U.S. Car Accidents Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/Final_Project_Poster_Team.png)<br>
 <br>
 
 F) **IST 718**: Big Data Analytics <br>
 **Covered Skills**: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning <br>
-**Description**: IST 718 instruct students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). <br>
+**Description**: IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). <br>
 <br>
 G) **IST 736**: Text Analysis <br>
 **Covered Skills**: Text Representation, Word Vectorization, Lexicon-based Text Analysis, Clustering Analysis, Topic Modeling, Naive Bayes Algorithm <br>
-**Description**: IST 736 introduces concepts and methods for knowledge discovery from large amount of text data, and the application of text mining techniques for business intelligence, digital humanities, and social behavior analysis.<br>
+**Description**: IST 736 introduces concepts and methods for knowledge discovery from a large amount of text data, and the application of text mining techniques for business intelligence, digital humanities, and social behavior analysis.<br>
