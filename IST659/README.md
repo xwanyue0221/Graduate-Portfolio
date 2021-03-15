@@ -5,7 +5,6 @@ IST 659 examines data structures, file organizations, concepts, and principles o
 The final project is to create a comprehensive database solution for a online forum called Toypedia.
 
 ## Files
-Final Project: <br>
 - PPT for ToyPedia.pptx: slides of final project's demonstration <br>
 - Project Design.pdf: project proposal. <br>
 - Project Implementation Report-1577476781000.pdf: Final report for this project<br>
