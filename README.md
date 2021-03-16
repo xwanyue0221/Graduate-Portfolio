@@ -24,20 +24,25 @@ A) **IST 719**: Information Visualization <br>
   <li> <b>Poster</b>:</li>
 </ul>
 
-![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)<img src="https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png"  width="200" height="800"><br>
+![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)<br>
 <br>
 
 B) **IST 707**: Data Analytics <br>
-**Covered Skills**: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) <br>
-**Description**: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. As a code-intensive course, IST707 requires students to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression, and several Classification approaches, such as Decision Tree, Support Vector Machine (SVM), K Nearest Neighbor (KNN), etc. to analyze the [U.S. Car Accidents dataset](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf). <br>
-**Poster:** <br>
+<ul>
+  <li> <b>Covered Skills</b>: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) </li>
+  <li> <b>Description</b>: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. As a code-intensive course, IST707 requires students to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression, and several Classification approaches, such as Decision Tree, Support Vector Machine (SVM), K Nearest Neighbor (KNN), etc. to analyze the [U.S. Car Accidents dataset](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf). </li>
+  <li> <b>Poster</b>:</li>
+</ul>
+
 ![U.S. Car Accidents Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/Final_Project_Poster_Team.png)<br>
 <br>
 
 C) **IST 718**: Big Data Analytics <br>
-**Covered Skills**: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning <br>
-**Description**: IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). <br>
-**Project Plots:** <br>
+<ul>
+  <li> <b>Covered Skills</b>: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning </li>
+  <li> <b>Description</b>:IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx). </li>
+  <li> <b>Project Plots</b>:</li>
+</ul>
 Density plot of Tenure, Monthly Charges, and Total Charges by Churn:<br>
 ![Density plot of Tenure, Monthly Charges, and Total Charges by Churn](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/Density%20plot%20of%20Tenure%2C%20Monthly%20Charges%2C%20and%20Total%20Charges%20by%20Churn.png)<br>
 Evaluation and Comparison of Random Forest, Gradient Boosting Tree, Logistic Regression, and Linear Support Vector Machine Models:<br>
