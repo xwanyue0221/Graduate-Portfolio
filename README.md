@@ -18,15 +18,14 @@ The [resume](./wanyuex.pdf) is updated on March 2021.
 ## 3. Academic Projects
 ### Data Analytics and Visualization
 A) **IST 719**: Information Visualization <br>
-[Video Game Sales Analysis](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST719/719_game_poster.pdf)
+Deliverables: [Video Game Sales Analysis](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST719/719_game_poster.pdf), [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx)
 <ul>
-  <li> <b>Covered Skills</b>: R, Adobe Illustrator, Shiny Apps, Develop custom plots, Visually explore data, [Video Game Sales Analysis](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST719/719_game_poster.pdf)</li>
+  <li> <b>Covered Skills</b>: R, Adobe Illustrator, Shiny Apps, Develop custom plots, Visually explore data </li>
   <li> <b>Description</b>: 
     The learning objective of IST 719 is developing a portfolio of resources, demonstrations, recipes, and examples of various data visualization techniques. 
     The deliverables of IST 719 are a poster and an advanced topic presentation. For the poster design, which is 
-    the [Video Game Sales Analysis](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST719/719_game_poster.pdf), I have chosen the "Video Game" 
-    dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have 
-    chosen [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) as a topic and shot a short video with professional slides. </li>
+    the Video Game Sales Analysis, I have chosen the "Video Game Sales" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe
+    illustrator. For the advanced topic presentation, I have chosen Information Visualization in Kaggle as a topic and shot a short video with professional slides. </li>
   <li> <b>Poster</b>:</li>
 </ul>
 
