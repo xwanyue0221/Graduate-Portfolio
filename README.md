@@ -24,7 +24,7 @@ A) **IST 719**: Information Visualization <br>
   <li> <b>Poster</b>:</li>
 </ul>
 
-![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png=100x20)<br>
+![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)<img src="https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png"  width="200" height="800"><br>
 <br>
 
 B) **IST 707**: Data Analytics <br>
