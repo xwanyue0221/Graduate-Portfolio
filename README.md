@@ -19,15 +19,10 @@ The [resume](./wanyuex.pdf) is updated on March 2021.
 ### Data Analytics and Visualization
 A) **IST 719**: Information Visualization <br>
 <ul>
-<li>Bird</li>
-<li>Magic</li>
+<li> **Covered Skills**: R, Adobe Illustrator, Shiny Apps, Develop custom plots, Visually explore data </li>
+<li> **Description**: The learning objective of IST 719 is developing a portfolio of resources, demonstrations, recipes, and examples of various data visualization techniques. The deliverables of IST 719 are a poster and an advanced topic presentation. For the poster design, which is the [Video Game Analysis](./IST719/719_game_poster.pdf), I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) as a topic and shot a short video with professional slides. </li>
+<li> **Poster:** ![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)</li>
 </ul>
-
-**Covered Skills**:  R, Adobe Illustrator, Shiny Apps, Develop custom plots, Visually explore data <br>
-**Description**: The learning objective of IST 719 is developing a portfolio of resources, demonstrations, recipes, and examples of various data visualization techniques. The deliverables of IST 719 are a poster and an advanced topic presentation. For the poster design, which is the [Video Game Analysis](./IST719/719_game_poster.pdf), I have chosen the "Video Game" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. For the advanced topic presentation, I have chosen [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx) as a topic and shot a short video with professional slides. <br>
-**Poster:** <br>
-![Video Game Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST719/719_game_poster.png)<br>
-<br>
 
 B) **IST 707**: Data Analytics <br>
 **Covered Skills**: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) <br>
