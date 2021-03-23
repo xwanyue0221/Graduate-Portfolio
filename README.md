@@ -113,6 +113,6 @@ I) **IST 769**: Advanced Big Data Management <br>
 Deliverables: [Introduction of Graph Database - Neo4j](./IST769/xwanyue_whitpaper_Neo4j.pdf)
 <ul>
   <li> <b>Covered Skills</b>: Relational SQL (Programming, Transactions, Concurrency Control, Performance, Security), Hadoop Ecosystems (HDFS, MapReduce, Hive, Hbase, Impala, etc), noSQL (MongoDB, Redis, Cassandra, Kakfa, KSQL, Graph Databases), Data Modeling & Design </li>
-  <li> <b>Description</b>: IST 769's study objectives include the analysis of relational and non-relational databases and their corresponding management system architectures, the analysis of data systems performance, scalability, and security, and analysis of choosing different databases in different scenarios. The final project of IST769 is to provide a detailed and professional presentation based on the chosen topic. The final project of IST 769 is to provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. </li>
+  <li> <b>Description</b>: IST 769's study objectives include the analysis of relational and non-relational databases and their corresponding management system architectures, the analysis of data systems performance, scalability, and security, and analysis of choosing different databases in different scenarios. The final project of IST769 is to provide a detailed and professional presentation based on the chosen topic. The topic I have chosen is the introduction of a graph database named Neo4j. </li>
 </ul>
 
