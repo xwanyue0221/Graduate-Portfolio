@@ -9,7 +9,7 @@ This repository is a Graduation Portfolio Collection containing projects, course
 - **LinkedIn Website:** www.linkedin.com/in/wanyue-xiao-60688196
 
 ## 1. Paper: How I Would Learn Data Science
-Paper-link <br>
+[Paper-link](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/Portfolio%20Milestone_xwanyue.pdf) <br>
 A paper summarises knowledge and techniques learned in the master's program.
 
 ## 2. Professional Resume
