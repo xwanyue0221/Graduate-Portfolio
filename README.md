@@ -15,7 +15,13 @@ A paper summarises knowledge and techniques learned in the master's program.
 ## 2. Professional Resume
 The [resume](./wanyuex.pdf) is updated on March 2021.
 
-## 3. Academic Projects
+## 3. Presentation slide
+The [slide](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/Portfolio%20Milestone_xwanyue.pdf) is updated on April 2021.
+
+## 4. Presentation Video
+The [video](./wanyuex.pdf) is updated on updated on April 2021.
+
+## 5. Academic Projects
 ### Data Analytics and Visualization
 A) **IST 719**: Information Visualization <br>
 Deliverables: [Video Game Sales Analysis](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST719/719_game_poster.pdf), [Information Visualization in Kaggle](./IST719/719_advanced_topic_ppt.pptx)
