@@ -16,7 +16,7 @@ A paper summarises knowledge and techniques learned in the master's program.
 The [resume](./wanyuex.pdf) is updated on March 2021.
 
 ## 3. Presentation slide
-The [slide](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/Portfolio%20Milestone_xwanyue.pdf) is updated on April 2021.
+The [slide](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/portfolio%20slide.pdf) is updated on April 2021.
 
 ## 4. Presentation Video
 The [video](./wanyuex.pdf) is updated on updated on April 2021.
