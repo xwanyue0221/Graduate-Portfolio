@@ -28,10 +28,9 @@ Deliverables: [Video Game Sales Analysis](https://github.com/xwanyue0221/Graduat
 <ul>
   <li> <b>Covered Skills</b>: R, Adobe Illustrator, Shiny Apps, Develop custom plots, Visually explore data </li>
   <li> <b>Description</b>: 
-    The learning objective of IST 719 is developing a portfolio of resources, demonstrations, recipes, and examples of various data visualization techniques. 
-    The deliverables of IST 719 are a poster and an advanced topic presentation. For the poster design, which is 
-    the Video Game Sales Analysis, I have chosen the "Video Game Sales" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe
-    illustrator. For the advanced topic presentation, I have chosen Information Visualization in Kaggle as a topic and shot a short video with professional slides. </li>
+    The learning objective of IST 719 is to develop a portfolio of resources, demonstrations, recipes, and examples of various data visualization techniques. 
+    The deliverables of IST 719 are a poster and an advanced topic presentation. For the poster design, which is the Video Game Sales Analysis, I have chosen the "Video Game Sales" dataset obtained from Kaggle and generated a Cyberpunk style poster using R and Adobe illustrator. 
+    For the advanced topic presentation, I have chosen Information Visualization in Kaggle as a topic and shot a short video with professional slides.</li>
   <li> <b>Poster</b>:</li>
 </ul>
 
@@ -42,7 +41,7 @@ B) **IST 707**: Data Analytics <br>
 Deliverables: [U.S. Car Accidents Report](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST707/Final%20Project/IST707%20Final%20Project%20Report.pdf)
 <ul>
   <li> <b>Covered Skills</b>: Python, R, ML Models (Association Rules Mining, Classification & Clustering, Elementary Deep Learning, Evaluation & Analysis) </li>
-  <li> <b>Description</b>: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. As a code-intensive course, IST707 requires students to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression, and several Classification approaches, such as Decision Tree, Support Vector Machine (SVM), K Nearest Neighbor (KNN), etc. to analyze the U.S. Car Accidents dataset. </li>
+  <li> <b>Description</b>: IST 707 covers various data mining methods for data analysis, ranging from various classification and clustering algorithms to advanced deep learning methods. Be designed as a code-intensive course, IST707 requires students to obtain hands-on experience by solving real-world problems with state-of-the-art data mining solutions. In the final project, our group used Association Rule Mining, Logistic Regression, and several Classification approaches, such as Decision Tree, Support Vector Machine (SVM), K Nearest Neighbor (KNN), etc. to analyze the U.S. Car Accidents dataset. </li>
   <li> <b>Poster</b>:</li>
 </ul>
 
@@ -53,7 +52,8 @@ C) **IST 718**: Big Data Analytics <br>
 Deliverables: [Telecom Customer Churn Analysis](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST718/Final%20Project/project_proposal_grade.docx)
 <ul>
   <li> <b>Covered Skills</b>: Apache Spark, MapReduce, Hadoop, Spark ML, Supervised & Unsupervised Learning </li>
-  <li> <b>Description</b>:IST 718 instructs students how to utilize techniques of big data analysis to gain actionable insights based on the knowledge gained from IST707, using Python, Apache Spark, and Machine Learning Algorithms. In the final project, our group successfully developed, concluded, and evaluated the prediction models, providing comprehensive suggestions to the Telecom Customer Churn Analysis. </li>
+  <li> <b>Description</b>:IST 718 instructs students to utilize techniques of big data analysis to process datasets which large data volumes. By using various combinations of programming and analytics tools (e.g., Python, Apache Spark, and Machine Learning Algorithms), I am able to generate actionable insights from the business scenario and the result of data analysis.  
+In the final project, our group successfully developed concluded, and evaluated the prediction models, providing comprehensive suggestions to the Telecom Customer Churn Analysis. </li>
   <li> <b>Project Plots</b>:</li>
 </ul>
 
@@ -104,7 +104,7 @@ Topic Level Sentiment Changes:<br>
 G) **IST 736**: Text Analysis <br>
 <ul>
   <li> <b>Covered Skills</b>: Text Representation, Word Vectorization, Lexicon-based Text Analysis, Clustering Analysis, Topic Modeling, Naive Bayes Algorithm </li>
-  <li> <b>Description</b>: IST 736 introduces concepts and methods for knowledge discovery from a large amount of text data, and the application of text mining techniques for business intelligence, digital humanities, and social behavior analysis. </li>
+  <li> <b>Description</b>: IST 736 includes concepts and methods for knowledge discovery and extraction from a large amount of unstructured data. Selecting and using different text mining applications flexibly and agilely based on the business background is also required as one of the course targets. This course also introduces concepts that are related to business intelligence, digital humanities, and social behavior analysis. </li>
 </ul>
 
 ### Database Management
@@ -112,7 +112,7 @@ H) **IST 659**: Data Administration Concepts and Database Management <br>
 Deliverables: [Toypedia Database Solution Report](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST659/Project%20Implementation%20Report-1577476781000.pdf)
 <ul>
   <li> <b>Covered Skills</b>: Definition, development, and management of databases for information systems, including data analysis techniques, data modeling, schema design, query languages, and search specifications. Overview of file organization for databases. Data administration concepts and skills </li>
-  <li> <b>Description</b>: IST 659 examines data structures, file organizations, concepts, and principles of database management systems (DBMS) as well as data analysis, database design, data modeling, database management, and database implementation. The final project is to create a comprehensive demonstration of database design, including modeling, design, query, user interface, and implementation. The project aims to design a database system for an online forum called ToyPedia, which is an online forum equipping basic functionalities (such as posting and replying, user management, eCommerce system, stock management, order management, shipping management, staff management, and KPI indication. </li>
+  <li> <b>Description</b>: IST 659 examines data structures, file organizations, concepts, and principles of database management systems (DBMS), data analysis, database design, data modeling, database management, and database implementation. The final project is to create a comprehensive demonstration of database design, including modeling, design, query, user interface, and database implementation. The project aims to design a database system (UI design is required) for an online forum called ToyPedia. The database system should be able to support various functionalities, such as posting and replying, user management, eCommerce system, stock management, order management, shipping management, staff management, and KPI indication. </li>
 </ul>
 
 I) **IST 769**: Advanced Big Data Management <br>
