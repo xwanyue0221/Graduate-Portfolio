@@ -110,6 +110,8 @@ G) **IST 736**: Text Analysis <br>
 ### Database Management
 H) **IST 659**: Data Administration Concepts and Database Management <br>
 Deliverables: [Toypedia Database Solution Report](https://github.com/xwanyue0221/MS-Applied-Data-Science-Portfolio-Milestone-Spring-2021/blob/main/IST659/Project%20Implementation%20Report-1577476781000.pdf)
+
+![ERD Diagram](https://github.com/xwanyue0221/Graduate-Portfolio/blob/main/IST659/ERD%20Diagram.png)<br>
 <ul>
   <li> <b>Covered Skills</b>: Definition, development, and management of databases for information systems, including data analysis techniques, data modeling, schema design, query languages, and search specifications. Overview of file organization for databases. Data administration concepts and skills </li>
   <li> <b>Description</b>: IST 659 examines data structures, file organizations, concepts, and principles of database management systems (DBMS), data analysis, database design, data modeling, database management, and database implementation. The final project is to create a comprehensive demonstration of database design, including modeling, design, query, user interface, and database implementation. The project aims to design a database system (UI design is required) for an online forum called ToyPedia. The database system should be able to support various functionalities, such as posting and replying, user management, eCommerce system, stock management, order management, shipping management, staff management, and KPI indication. </li>
